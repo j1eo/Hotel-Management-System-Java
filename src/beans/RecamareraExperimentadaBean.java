@@ -1,26 +1,23 @@
 package beans;
 
-import java.util.ArrayList;
-
-public class RecamareraExperimentadaBean extends RecamareraBean{
+public class RecamareraExperimentadaBean extends RecamareraBean {
 
 	private static final long serialVersionUID = 1L;
 
 	private static String nivelExperiencia = "Experimentada";
 
 	public RecamareraExperimentadaBean() {
-	}//constructor vacio
 
-	public RecamareraExperimentadaBean(String nombre, double salarioBase, ArrayList<HabitacionBean> habitacionesAsignadas) {
-		super(nombre, nivelExperiencia, salarioBase, habitacionesAsignadas);
+	}// constructor vacio
 
+	// Constructor que pasa una lista vacía de habitaciones
+	public RecamareraExperimentadaBean(String nombre, double salarioBase) {
+		super(nombre, nivelExperiencia, salarioBase); // Llamada al constructor de la clase base
 	}
 
 	@Override
 	public boolean puedeAtender(String tipoHabitacion) {
 		return tipoHabitacion.equalsIgnoreCase("Doble") || tipoHabitacion.equalsIgnoreCase("Penhouse");
 	}
-
-		
 
 }
