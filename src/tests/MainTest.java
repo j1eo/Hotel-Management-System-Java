@@ -13,15 +13,15 @@ public class MainTest {
         RecamareraController recamareraController = new RecamareraController();
 
         // Crear hoteles y agregar habitaciones
-        hotelController.agregarHotel("Hotel Sol", 4);
-        hotelController.agregarHabitacion("Hotel Sol", "1", "Sencilla");
-        hotelController.agregarHabitacion("Hotel Sol", "2", "Doble");
-        hotelController.agregarHabitacion("Hotel Sol", "3", "Penhouse");
+        hotelController.agregarHotel("Hotel A", 4);
+        hotelController.agregarHabitacion("Hotel A", "1", "Sencilla");
+        hotelController.agregarHabitacion("Hotel A", "2", "Doble");
+        hotelController.agregarHabitacion("Hotel A", "3", "Penhouse");
 
-        hotelController.agregarHotel("Hotel Luna", 5);
-        hotelController.agregarHabitacion("Hotel Luna", "4", "Sencilla");
-        hotelController.agregarHabitacion("Hotel Luna", "5", "Doble");
-        hotelController.agregarHabitacion("Hotel Luna", "6", "Penhouse");
+        hotelController.agregarHotel("Hotel B", 5);
+        hotelController.agregarHabitacion("Hotel B", "4", "Sencilla");
+        hotelController.agregarHabitacion("Hotel B", "5", "Doble");
+        hotelController.agregarHabitacion("Hotel B", "6", "Penhouse");
 
         // Crear empleados
         RecamareraAuxiliar recamarera1 = new RecamareraAuxiliar("Ana", 1500.0);
@@ -33,18 +33,18 @@ public class MainTest {
         empleadoController.agregarRecamarera(amaDeLlaves);
 
         // Asignar habitaciones a empleados
-        ArrayList<HabitacionBean> habitacionesHotelSol = hotelController.listarHabitacionesDeHotel("Hotel Sol");
-        ArrayList<HabitacionBean> habitacionesHotelLuna = hotelController.listarHabitacionesDeHotel("Hotel Luna");
+        ArrayList<HabitacionBean> habitacionesHotelSol = hotelController.listarHabitacionesDeHotel("Hotel A");
+        ArrayList<HabitacionBean> habitacionesHotelLuna = hotelController.listarHabitacionesDeHotel("Hotel B");
 
         // Asignaciones en Hotel Sol
         recamareraController.asignarHabitacion(recamarera1, habitacionesHotelSol.get(0)); // Sencilla
         recamareraController.asignarHabitacion(recamarera2, habitacionesHotelSol.get(1)); // Doble
-        // recamareraController.asignarHabitacion(amaDeLlaves, habitacionesHotelSol.get(2)); // Penhouse
+        recamareraController.asignarHabitacion(amaDeLlaves, habitacionesHotelSol.get(2)); // Penhouse
 
         // Asignaciones en Hotel Luna
         recamareraController.asignarHabitacion(recamarera1, habitacionesHotelLuna.get(0)); // Sencilla
         recamareraController.asignarHabitacion(recamarera2, habitacionesHotelLuna.get(1)); // Doble
-        // recamareraController.asignarHabitacion(amaDeLlaves, habitacionesHotelLuna.get(2)); // Penhouse
+        recamareraController.asignarHabitacion(amaDeLlaves, habitacionesHotelLuna.get(2)); // Penhouse
 
         // Imprimir detalles de los hoteles
         System.out.println("Hoteles registrados:");
@@ -69,16 +69,16 @@ public class MainTest {
         }
 
         // Imprimir comisiones por habitación de Hotel Sol
-        System.out.println("\nComisiones por habitación del hotel 'Hotel Sol':");
+        System.out.println("\nComisiones por habitación del hotel 'Hotel A':");
         for (HabitacionBean habitacion : habitacionesHotelSol) {
-            double comision = hotelController.calcularComision("Hotel Sol", habitacion.getID());
+            double comision = hotelController.calcularComision("Hotel A", habitacion.getID());
             System.out.println("ID: " + habitacion.getID() + ", Comision: $" + comision);
         }
 
         // Imprimir comisiones por habitación de Hotel Luna
-        System.out.println("\nComisiones por habitación del hotel 'Hotel Luna':");
+        System.out.println("\nComisiones por habitación del hotel 'Hotel B':");
         for (HabitacionBean habitacion : habitacionesHotelLuna) {
-            double comision = hotelController.calcularComision("Hotel Luna", habitacion.getID());
+            double comision = hotelController.calcularComision("Hotel B", habitacion.getID());
             System.out.println("ID: " + habitacion.getID() + ", Comision: $" + comision);
         }
 
