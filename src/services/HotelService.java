@@ -1,9 +1,15 @@
 package services;
 
+import beans.EmpleadoBean;
+import beans.GerenteBean;
 import beans.HabitacionBean;
 import beans.HotelBean;
+import utils.HotelSearchType;
+
 
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 public class HotelService {
 
@@ -13,7 +19,29 @@ public class HotelService {
         this.hoteles = new ArrayList<>();
     }
 
-    public void agregarHotel(HotelBean hotel) {
+    public void agregarHotel(String nombre, int estrellas) {
+        // Crear el hotel
+        HotelBean hotel = new HotelBean(nombre, estrellas);
+
+        // Agregar habitaciones
+        for (int i = 1; i <= 20; i++) {
+            HabitacionBean habitacion = new HabitacionBean("S-" + i, "sencilla");
+            hotel.agregarHabitacion(habitacion); // Asignar habitación al hotel
+        }
+        for (int i = 1; i <= 15; i++) {
+            HabitacionBean habitacion = new HabitacionBean("D-" + i, "doble");
+            hotel.agregarHabitacion(habitacion); // Asignar habitación al hotel
+        }
+        for (int i = 1; i <= 5; i++) {
+            HabitacionBean habitacion = new HabitacionBean("P-" + i, "penhouse");
+            hotel.agregarHabitacion(habitacion); // Asignar habitación al hotel
+        }
+
+        // Falta Agregar Nombre a gerentes
+        hotel.getEmpleados().add(new GerenteBean("Nombre Gerente 1", 0));
+        hotel.getEmpleados().add(new GerenteBean("Nombre Gerente 2", 0));
+
+        // Agregar el hotel a la lista de hoteles
         hoteles.add(hotel);
     }
 
@@ -59,7 +87,7 @@ public class HotelService {
         return buscarHabitacionEnHotel(hotel, habitacionID);
     }
 
-    private HotelBean buscarHotelPorNombre(String nombreHotel) {
+    public HotelBean buscarHotelPorNombre(String nombreHotel) {
         for (HotelBean hotel : hoteles) {
             if (hotel.getNombre().equalsIgnoreCase(nombreHotel)) {
                 return hotel;
@@ -114,6 +142,38 @@ public class HotelService {
                 return estrellasHotel == 3 ? 60 : estrellasHotel == 4 ? 80 : 100;
             default:
                 throw new IllegalArgumentException("Tipo de habitación inválido.");
+        }
+    }
+    
+    private HotelBean findHotel(String query, HotelSearchType searchType) {
+        for (HotelBean hotel : hoteles) {
+            if ((searchType == HotelSearchType.NOMBRE && hotel.getNombre().equalsIgnoreCase(query)) ||
+                (searchType == HotelSearchType.ESTRELLAS && String.valueOf(hotel.getEstrellas()).equals(query))) {
+                return hotel;
+            }
+        }
+        return null;
+    }
+    
+    
+    
+    private void handleFind(String query, HotelSearchType searchType) {
+        try {
+            HotelBean foundHotel = findHotel(query, searchType);
+
+            if (foundHotel == null) {
+                JOptionPane.showMessageDialog(null, "Hotel no encontrado.");
+                return;
+            }
+
+            System.out.println("Nombre: " + foundHotel.getNombre() + ", Estrellas: " + foundHotel.getEstrellas());
+            System.out.println("Habitaciones:");
+            for (HabitacionBean habitacion : foundHotel.getHabitaciones()) {
+                System.out.println("  ID: " + habitacion.getID() + ", Tipo: " + habitacion.getTipo());
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ocurrió un error al buscar el hotel: " + e.getMessage());
         }
     }
 }

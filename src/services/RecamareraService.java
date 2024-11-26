@@ -7,14 +7,17 @@ import java.util.ArrayList;
 
 public class RecamareraService {
 
-    // Asigna una habitación a una recamarera si cumple con las condiciones
-    public void asignarHabitacion(RecamareraBean recamarera, HabitacionBean habitacion) {
-        if (recamarera.puedeAtender(habitacion.getTipo())) {
-            recamarera.getHabitacionesAsignadas().add(habitacion);
-        } else {
-            throw new IllegalArgumentException("La recamarera no puede atender este tipo de habitación.");
-        }
-    }
+	public void asignarHabitacion(RecamareraBean recamarera, HabitacionBean habitacion) {
+	    if (recamarera.puedeAtender(habitacion.getTipo())) {
+	        if (!recamarera.getHabitacionesAsignadas().contains(habitacion)) {
+	            recamarera.getHabitacionesAsignadas().add(habitacion);
+	        } else {
+	            throw new IllegalArgumentException("La habitación ya está asignada a esta recamarera.");
+	        }
+	    } else {
+	        throw new IllegalArgumentException("La recamarera no puede atender este tipo de habitación.");
+	    }
+	}
 
     // Calcula el salario total de una recamarera
     public double calcularSalario(RecamareraBean recamarera, ArrayList<HabitacionBean> habitaciones, int estrellasHotel) {
