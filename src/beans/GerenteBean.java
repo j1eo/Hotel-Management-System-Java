@@ -1,15 +1,15 @@
 package beans;
 
-
 public class GerenteBean extends EmpleadoBean {
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
-	private double bono;
-	
-	 public GerenteBean() {} // Constructor vacio
+    private double bono;
+ 
 
-    public GerenteBean(String nombre, double salarioBase, double bono) {
-        super(nombre, salarioBase);
+    public GerenteBean() {}
+
+    public GerenteBean(String nombre, double bono) {
+        super(nombre, 18000.0);
         this.bono = bono;
     }
 
@@ -21,8 +21,8 @@ public class GerenteBean extends EmpleadoBean {
         this.bono = bono;
     }
 
+    @Override
     public double calcularSalario() {
         return getSalarioBase() + bono;
     }
-
 }

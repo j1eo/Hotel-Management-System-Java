@@ -3,12 +3,11 @@ package beans;
 import java.io.Serializable;
 
 public abstract class EmpleadoBean implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	private String nombre;
+    private static final long serialVersionUID = 1L;
+
+    private String nombre;
     private double salarioBase;
-    
- // Constructor vacio
+
     public EmpleadoBean() {}
 
     public EmpleadoBean(String nombre, double salarioBase) {
