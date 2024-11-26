@@ -1,5 +1,7 @@
 package controllers;
 
+import beans.EmpleadoBean;
+import beans.HotelBean;
 import beans.RecamareraBean;
 import services.EmpleadoService;
 
@@ -14,12 +16,20 @@ public class EmpleadoController {
 		this.empleadoService = new EmpleadoService();
 	}
 
-	public void agregarRecamarera(RecamareraBean recamarera) {
-		empleadoService.agregarRecamarera(recamarera);
+	public void agregarRecamarera(RecamareraBean recamarera, HotelBean hotel) {
+		empleadoService.agregarRecamarera(recamarera, hotel);
+	}
+
+	public void agregarEmpleado(EmpleadoBean empleado, HotelBean hotel) {
+		empleadoService.agregarEmpleado(empleado, hotel);
 	}
 
 	public ArrayList<RecamareraBean> listarRecamareras() {
 		return empleadoService.listarRecamareras();
+	}
+	
+	public ArrayList<EmpleadoBean> listarEmpleados() {
+		return empleadoService.listarEmpleados();
 	}
 
 	public double calcularSalarioDeRecamarera(String nombre) {

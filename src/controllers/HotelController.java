@@ -15,12 +15,14 @@ public class HotelController {
     }
 
     public void agregarHotel(String nombre, int estrellas) {
-        HotelBean hotel = new HotelBean(nombre, estrellas);
-        hotelService.agregarHotel(hotel);
+        hotelService.agregarHotel(nombre, estrellas);
     }
 
     public ArrayList<HotelBean> listarHoteles() {
         return hotelService.listarHoteles();
+    }
+    public HotelBean buscarHotelPorNombre(String Nombre) {
+    	return hotelService.buscarHotelPorNombre(Nombre);
     }
 
     public void agregarHabitacion(String nombreHotel, String ID, String tipo) {
