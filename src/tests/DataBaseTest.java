@@ -4,14 +4,21 @@ import controllers.HotelController;
 import dataBase.ConexionDataBase;
 import dataBase.InicializarTablas;
 import dataBase.LoadConfig;
+import services.HotelService;
+import views.HotelViews;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
 public class DataBaseTest {
+    private static final String EXIT_OPTION = "Salir";
+
     public static void main(String[] args) {
+        Object selectedOption;
+        String parsedSelectedOption = "";
+
         // Cargar las propiedades para la conexión
         String propertiesPath = ".properties"; // Asegúrate de que esta sea la ruta correcta
         Properties props = LoadConfig.loadProperties(propertiesPath);
@@ -27,47 +34,45 @@ public class DataBaseTest {
 
         // Instancia de la conexión a la base de datos
         ConexionDataBase conexionDataBase = new ConexionDataBase(url, user, pass);
-        HotelController hotelController = new HotelController(conexionDataBase);
+        HotelService hotelService = new HotelService(conexionDataBase);
+        HotelViews hotelViews = new HotelViews();
+        HotelController hotelController = new HotelController(hotelService, hotelViews);
 
+        Connection connection = null;
         try {
             conexionDataBase.openConnection();
-            Connection connection = conexionDataBase.getConnection();
+            connection = conexionDataBase.getConnection();
 
             // Inicializar tablas
             InicializarTablas inicializarTablas = new InicializarTablas(connection);
             inicializarTablas.initializeDatabase();
 
-            // Menú principal
-            String parsedSelectedOption = "";
-            do {
-                String[] options = {"Listar Hoteles", "Agregar Hotel", "Listar Habitaciones de un Hotel", "Salir"};
-                Object selectedOption = JOptionPane.showInputDialog(null, "Selecciona una opción", "Menú Principal",
-                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                parsedSelectedOption = (selectedOption != null) ? selectedOption.toString() : "Salir";
+            // Bucle principal para mostrar el menú
+            while (true) {
+                try {
+                    String[] options = {"Listar Hoteles", "Agregar Hotel", "Listar Habitaciones de un Hotel", "Buscar Hotel por Nombre", "Eliminar Hotel", EXIT_OPTION};
+                    selectedOption = JOptionPane.showInputDialog(null, "Selecciona una opción", "Menú Principal",
+                            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-                switch (parsedSelectedOption) {
-                    case "Listar Hoteles":
-                        hotelController.listarHoteles();
+                    // Verificar si el usuario hizo clic en el botón de cancelar
+                    if (selectedOption == null || selectedOption.toString().equals(EXIT_OPTION)) {
+                        JOptionPane.showMessageDialog(null, "Saliendo del sistema...");
                         break;
-                    case "Agregar Hotel":
-                        hotelController.agregarHotel();
-                        break;
-                    case "Listar Habitaciones de un Hotel":
-                        hotelController.listarHabitacionesDeHotel();
-                        break;
-                    case "Salir":
-                        JOptionPane.showMessageDialog(null, "Saliendo...");
-                        break;
-                    default:
-                        JOptionPane.showMessageDialog(null, "Opción inválida. Intenta de nuevo.");
+                    }
+
+                    hotelController.evalOption(selectedOption);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Ha ocurrido un error: " + e.getMessage());
                 }
-            } while (!parsedSelectedOption.equals("Salir"));
+            }
 
         } catch (SQLException e) {
             System.err.println("Error en la operación SQL: " + e.getMessage());
         } finally {
             try {
-                conexionDataBase.closeConnection();
+                if (connection != null && !connection.isClosed()) {
+                    conexionDataBase.closeConnection();
+                }
             } catch (SQLException e) {
                 System.err.println("Error al cerrar la conexión: " + e.getMessage());
             }
