@@ -49,4 +49,22 @@ public class InicializarTablas {
             System.err.println("Error al crear la tabla 'habitacion': " + e.getMessage());
         }
     }
+    
+    public void crearTablaEmpleado() {
+        String sql = "CREATE TABLE IF NOT EXISTS empleado (" +
+                     "empleado_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "nombre VARCHAR(255) NOT NULL, " +
+                     "estrellas INT NOT NULL, " +
+                     "direccion VARCHAR(255) NOT NULL, " +
+                     "telefono VARCHAR(11) NOT NULL" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'hotel' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'hotel': " + e.getMessage());
+        }
+    }
+
 }

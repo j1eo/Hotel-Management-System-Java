@@ -20,22 +20,25 @@ public class ConexionDataBase {
 
     // Abrir conexión
     public void openConnection() throws SQLException {
-        try {
-            if (this.connection != null && !this.connection.isClosed()) {
-                return;
+        if (this.connection == null || this.connection.isClosed()) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                this.connection = DriverManager.getConnection(url, username, pwd);
+                System.out.println("Conexión abierta con éxito.");
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("Error al cargar el driver de MySQL", e);
             }
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(url, username, pwd);
-            System.out.println("Conexión abierta con éxito.");
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Error al cargar el driver de MySQL", e);
         }
     }
 
     // Cerrar conexión
     public void closeConnection() throws SQLException {
         if (this.connection != null && !this.connection.isClosed()) {
-            this.connection.close();
+            try {
+                this.connection.close();
+            } catch (SQLException e) {
+                throw new SQLException("Error al cerrar la conexión", e);
+            }
         }
     }
 
