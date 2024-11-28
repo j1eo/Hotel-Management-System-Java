@@ -4,31 +4,39 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class HotelBean implements Serializable {
-	
-	//AGREGAR DATOS BASICOS DE LOS OBJETOS EXTRA
-
+    
     private static final long serialVersionUID = 1L;
 
+    private int hotelId;
     private String nombre;
     private int estrellas;
+    private String direccion; // Nuevo atributo
+    private String telefono;  // Nuevo atributo
     private ArrayList<HabitacionBean> habitaciones;
-    private ArrayList<EmpleadoBean> empleados; // Lista de recamareras asignadas
+    private ArrayList<EmpleadoBean> empleados;
 
-    // Constructor vacío
     public HotelBean() {
         this.habitaciones = new ArrayList<>();
         this.empleados = new ArrayList<>();
     }
 
-    // Constructor con parámetros
-    public HotelBean(String nombre, int estrellas) {
+    public HotelBean(String nombre, int estrellas, String direccion, String telefono) {
         this.nombre = nombre;
         this.estrellas = estrellas;
+        this.direccion = direccion;
+        this.telefono = telefono;
         this.habitaciones = new ArrayList<>();
         this.empleados = new ArrayList<>();
     }
 
-    // Métodos getters y setters
+    public int getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(int hotelId) {
+        this.hotelId = hotelId;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -45,6 +53,22 @@ public class HotelBean implements Serializable {
         this.estrellas = estrellas;
     }
 
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
     public ArrayList<HabitacionBean> getHabitaciones() {
         return habitaciones;
     }
@@ -57,11 +81,10 @@ public class HotelBean implements Serializable {
         this.habitaciones.remove(habitacion);
     }
 
-    // Métodos para gestionar Empleados
     public ArrayList<EmpleadoBean> getEmpleados() {
         return empleados;
     }
-    
+
     public void agregarEmpleado(EmpleadoBean empleado) {
         if (!empleados.contains(empleado)) {
             this.empleados.add(empleado);
