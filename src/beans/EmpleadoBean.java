@@ -5,6 +5,7 @@ import java.io.Serializable;
 public abstract class EmpleadoBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private int empleadoId;
     private String nombre;
     private double salarioBase;
 
@@ -13,6 +14,14 @@ public abstract class EmpleadoBean implements Serializable {
     public EmpleadoBean(String nombre, double salarioBase) {
         this.nombre = nombre;
         this.salarioBase = salarioBase;
+    }
+
+    public int getEmpleadoId() {
+        return empleadoId;
+    }
+
+    public void setEmpleadoId(int empleadoId) {
+        this.empleadoId = empleadoId;
     }
 
     public String getNombre() {
