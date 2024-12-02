@@ -1,73 +1,78 @@
 package views;
 
-import beans.HabitacionBean;
-import beans.HotelBean;
-
+import controllers.HotelController;
 import javax.swing.*;
 import java.util.ArrayList;
+import beans.HotelBean;
+import beans.HabitacionBean;
 
 public class HotelViews {
 
-    public String solicitarNombreHotel() {
-        return JOptionPane.showInputDialog("Ingresa el nombre del Hotel: ");
+    private final HotelController hotelController;
+
+    public HotelViews(HotelController hotelController) {
+        this.hotelController = hotelController;
     }
 
-    public int solicitarEstrellas() {
-        String estrellasStr = JOptionPane.showInputDialog("Ingresa la cantidad de Estrellas: ");
-        return Integer.parseInt(estrellasStr);
-    }
+    public void MenuPrincipalHotel(HotelController hotelController) {
+        Object selectedOption;
+        while (true) {
+            try {
+                String[] options = {"Listar Hoteles", "Agregar Hotel", "Listar Habitaciones de un Hotel", "Buscar Hotel por Nombre", "Eliminar Hotel", "Salir"};
+                selectedOption = JOptionPane.showInputDialog(null, "Selecciona una opción", "Menú Principal de Hoteles",
+                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-    public String solicitarDireccion() {
-        return JOptionPane.showInputDialog("Ingresa la dirección del Hotel: ");
-    }
+                if (selectedOption == null || selectedOption.toString().equals("Salir")) {
+                    mostrarMensaje("Saliendo del sistema de hoteles...");
+                    break;
+                }
 
-    public String solicitarTelefono() {
-        return JOptionPane.showInputDialog("Ingresa el teléfono del Hotel: ");
+                hotelController.evalOption(selectedOption);
+            } catch (Exception e) {
+                mostrarMensaje("Ha ocurrido un error: " + e.getMessage());
+            }
+        }
     }
 
     public void mostrarMensaje(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje);
     }
 
+    public String solicitarNombreHotel() {
+        return JOptionPane.showInputDialog("Ingresa el nombre del hotel:");
+    }
+
+    public int solicitarEstrellas() {
+        return Integer.parseInt(JOptionPane.showInputDialog("Ingresa el número de estrellas:"));
+    }
+
+    public String solicitarDireccion() {
+        return JOptionPane.showInputDialog("Ingresa la dirección del hotel:");
+    }
+
+    public String solicitarTelefono() {
+        return JOptionPane.showInputDialog("Ingresa el teléfono del hotel:");
+    }
+
     public void listarHoteles(ArrayList<HotelBean> hoteles) {
-        StringBuilder sb = new StringBuilder("Hoteles registrados:\n");
+        StringBuilder mensaje = new StringBuilder("Hoteles:\n");
         for (HotelBean hotel : hoteles) {
-            sb.append("Nombre: ").append(hotel.getNombre())
-              .append(", Estrellas: ").append(hotel.getEstrellas())
-              .append(", Dirección: ").append(hotel.getDireccion())
-              .append(", Teléfono: ").append(hotel.getTelefono())
-              .append("\n");
+            mensaje.append("ID: ").append(hotel.getHotelId()).append(", Nombre: ").append(hotel.getNombre())
+                   .append(", Estrellas: ").append(hotel.getEstrellas()).append("\n");
         }
-        JOptionPane.showMessageDialog(null, sb.toString());
-    }
-
-    public String solicitarNombreHotelParaHabitacion() {
-        return JOptionPane.showInputDialog("Ingresa el nombre del Hotel al que deseas agregar una habitación: ");
-    }
-
-    public String solicitarIDHabitacion() {
-        return JOptionPane.showInputDialog("Ingresa el ID de la habitación: ");
-    }
-
-    public String solicitarTipoHabitacion() {
-        return JOptionPane.showInputDialog("Ingresa el tipo de habitación: ");
+        mostrarMensaje(mensaje.toString());
     }
 
     public void listarHabitacionesDeHotel(String nombreHotel, ArrayList<HabitacionBean> habitaciones) {
-        StringBuilder sb = new StringBuilder("Habitaciones del hotel " + nombreHotel + ":\n");
+        StringBuilder mensaje = new StringBuilder("Habitaciones del hotel ").append(nombreHotel).append(":\n");
         for (HabitacionBean habitacion : habitaciones) {
-            sb.append("ID: ").append(habitacion.getID()).append(", Tipo: ").append(habitacion.getTipo()).append("\n");
+            mensaje.append("ID: ").append(habitacion.getID()).append(", Tipo: ").append(habitacion.getTipo()).append("\n");
         }
-        JOptionPane.showMessageDialog(null, sb.toString());
+        mostrarMensaje(mensaje.toString());
     }
 
     public void mostrarHotel(HotelBean hotel) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Nombre: ").append(hotel.getNombre()).append("\n")
-          .append("Estrellas: ").append(hotel.getEstrellas()).append("\n")
-          .append("Dirección: ").append(hotel.getDireccion()).append("\n")
-          .append("Teléfono: ").append(hotel.getTelefono()).append("\n");
-
-        JOptionPane.showMessageDialog(null, sb.toString());
+        mostrarMensaje("ID: " + hotel.getHotelId() + ", Nombre: " + hotel.getNombre() + ", Estrellas: " + hotel.getEstrellas() +
+                       ", Dirección: " + hotel.getDireccion() + ", Teléfono: " + hotel.getTelefono());
     }
 }
