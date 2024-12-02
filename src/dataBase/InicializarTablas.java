@@ -13,6 +13,11 @@ public class InicializarTablas {
 
     public void initializeDatabase() {
         crearTablaHotel();
+        crearTablaEmpleado();
+        crearTablaRecamarera();
+        crearTablaGerente();
+        crearTablaVendedor();
+        crearTablaEmpleadoHotel();
         crearTablaHabitacion();
     }
 
@@ -33,13 +38,94 @@ public class InicializarTablas {
         }
     }
 
+    public void crearTablaEmpleado() {
+        String sql = "CREATE TABLE IF NOT EXISTS empleado (" +
+                     "empleado_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "nombre VARCHAR(255) NOT NULL, " +
+                     "salario DOUBLE NOT NULL, " +
+                     "tipo VARCHAR(50) NOT NULL" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'empleado' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'empleado': " + e.getMessage());
+        }
+    }
+
+    public void crearTablaRecamarera() {
+        String sql = "CREATE TABLE IF NOT EXISTS recamarera (" +
+                     "empleado_id INT PRIMARY KEY, " +
+                     "nivel_experiencia VARCHAR(255) NOT NULL, " +
+                     "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'recamarera' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'recamarera': " + e.getMessage());
+        }
+    }
+
+    public void crearTablaGerente() {
+        String sql = "CREATE TABLE IF NOT EXISTS gerente (" +
+                     "empleado_id INT PRIMARY KEY, " +
+                     "bono DOUBLE NOT NULL, " +
+                     "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'gerente' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'gerente': " + e.getMessage());
+        }
+    }
+
+    public void crearTablaVendedor() {
+        String sql = "CREATE TABLE IF NOT EXISTS vendedor (" +
+                     "empleado_id INT PRIMARY KEY, " +
+                     "comision DOUBLE NOT NULL, " +
+                     "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'vendedor' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'vendedor': " + e.getMessage());
+        }
+    }
+
+    public void crearTablaEmpleadoHotel() {
+        String sql = "CREATE TABLE IF NOT EXISTS empleado_hotel (" +
+                     "empleado_id INT NOT NULL, " +
+                     "hotel_id INT NOT NULL, " +
+                     "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id), " +
+                     "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'empleado_hotel' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'empleado_hotel': " + e.getMessage());
+        }
+    }
+
     public void crearTablaHabitacion() {
         String sql = "CREATE TABLE IF NOT EXISTS habitacion (" +
                      "habitacion_id INT AUTO_INCREMENT PRIMARY KEY, " +
                      "hotel_id INT NOT NULL, " +
                      "id VARCHAR(50) NOT NULL, " +
                      "tipo VARCHAR(50) NOT NULL, " +
-                     "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)" +
+                     "recamarera_id INT, " +
+                     "disponible BOOLEAN NOT NULL DEFAULT true, " +
+                     "numero_personas INT DEFAULT 0, " +
+                     "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id), " +
+                     "FOREIGN KEY (recamarera_id) REFERENCES recamarera(empleado_id)" +
                      ");";
 
         try (Statement stmt = connection.createStatement()) {
@@ -47,23 +133,6 @@ public class InicializarTablas {
             System.out.println("Tabla 'habitacion' creada o ya existe.");
         } catch (SQLException e) {
             System.err.println("Error al crear la tabla 'habitacion': " + e.getMessage());
-        }
-    }
-    
-    public void crearTablaEmpleado() {
-        String sql = "CREATE TABLE IF NOT EXISTS empleado (" +
-                     "empleado_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                     "nombre VARCHAR(255) NOT NULL, " +
-                     "estrellas INT NOT NULL, " +
-                     "direccion VARCHAR(255) NOT NULL, " +
-                     "telefono VARCHAR(11) NOT NULL" +
-                     ");";
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Tabla 'hotel' creada o ya existe.");
-        } catch (SQLException e) {
-            System.err.println("Error al crear la tabla 'hotel': " + e.getMessage());
         }
     }
 
