@@ -3,23 +3,26 @@ package controllers;
 import beans.HabitacionBean;
 import beans.HotelBean;
 import services.HotelService;
+import views.EmpleadoViews;
 import views.HotelViews;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class HotelController {
 
-    private HotelService hotelService;
-    private HotelViews hotelViews;
+    private final HotelService hotelService;
+    private final HotelViews hotelViews;
+    private final EmpleadoController empleadoController;
+    private final EmpleadoViews empleadoViews;
 
-    public HotelController(HotelService hotelService, HotelViews hotelViews) {
+    public HotelController(HotelService hotelService, HotelViews hotelViews, EmpleadoController empleadoController, EmpleadoViews empleadoViews) {
         this.hotelService = hotelService;
         this.hotelViews = hotelViews;
+        this.empleadoController = empleadoController;
+        this.empleadoViews = empleadoViews;
     }
 
     public void evalOption(Object selectedOption) {
-        // Verificar si la opción seleccionada es nula (cancelación)
         if (selectedOption == null) {
             return;
         }
@@ -59,8 +62,16 @@ public class HotelController {
             String direccion = hotelViews.solicitarDireccion();
             String telefono = hotelViews.solicitarTelefono();
 
-            hotelService.agregarHotel(nombre, estrellas, direccion, telefono);
+            // Llamada al servicio para agregar el hotel
+            int hotelId = hotelService.agregarHotel(nombre, estrellas, direccion, telefono);
             hotelViews.mostrarMensaje("Hotel " + nombre + " con " + estrellas + " estrellas agregado exitosamente.");
+
+            // Inscripción de dos gerentes
+            for (int i = 0; i < 2; i++) {
+                String nombreGerente = empleadoViews.solicitarNombreGerente();
+                empleadoController.agregarGerente(nombreGerente, hotelId);
+            }
+
         } catch (SQLException e) {
             hotelViews.mostrarMensaje("Error al agregar el hotel: " + e.getMessage());
         }
@@ -75,21 +86,6 @@ public class HotelController {
         }
     }
 
-    public void agregarHabitacion() {
-        try {
-            String nombreHotel = hotelViews.solicitarNombreHotelParaHabitacion();
-            if (nombreHotel == null) return;
-            String id = hotelViews.solicitarIDHabitacion();
-            String tipo = hotelViews.solicitarTipoHabitacion();
-
-            HabitacionBean habitacion = new HabitacionBean(id, tipo);
-            hotelService.agregarHabitacion(nombreHotel, habitacion);
-            hotelViews.mostrarMensaje("Habitación " + id + " agregada exitosamente al hotel " + nombreHotel + ".");
-        } catch (SQLException e) {
-            hotelViews.mostrarMensaje("Error al agregar la habitación: " + e.getMessage());
-        }
-    }
-
     public void listarHabitacionesDeHotel() {
         try {
             String nombreHotel = hotelViews.solicitarNombreHotel();
@@ -101,17 +97,6 @@ public class HotelController {
         }
     }
 
-    public void eliminarHotel() {
-        try {
-            String nombreHotel = hotelViews.solicitarNombreHotel();
-            if (nombreHotel == null) return;
-            hotelService.eliminarHotel(nombreHotel);
-            hotelViews.mostrarMensaje("Hotel " + nombreHotel + " eliminado exitosamente.");
-        } catch (SQLException e) {
-            hotelViews.mostrarMensaje("Error al eliminar el hotel: " + e.getMessage());
-        }
-    }
-
     public void buscarHotelPorNombre() {
         try {
             String nombreHotel = hotelViews.solicitarNombreHotel();
@@ -120,6 +105,17 @@ public class HotelController {
             hotelViews.mostrarHotel(hotel);
         } catch (SQLException e) {
             hotelViews.mostrarMensaje("Error al buscar el hotel: " + e.getMessage());
+        }
+    }
+
+    public void eliminarHotel() {
+        try {
+            String nombreHotel = hotelViews.solicitarNombreHotel();
+            if (nombreHotel == null) return;
+            hotelService.eliminarHotel(nombreHotel);
+            hotelViews.mostrarMensaje("Hotel " + nombreHotel + " eliminado exitosamente.");
+        } catch (SQLException e) {
+            hotelViews.mostrarMensaje("Error al eliminar el hotel: " + e.getMessage());
         }
     }
 }
