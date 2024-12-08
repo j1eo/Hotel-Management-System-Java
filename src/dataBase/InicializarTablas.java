@@ -19,6 +19,7 @@ public class InicializarTablas {
         crearTablaVendedor();
         crearTablaEmpleadoHotel();
         crearTablaHabitacion();
+        crearTablaReservacion(); // Nueva tabla de reservaciones
     }
 
     public void crearTablaHotel() {
@@ -56,7 +57,8 @@ public class InicializarTablas {
 
     public void crearTablaRecamarera() {
         String sql = "CREATE TABLE IF NOT EXISTS recamarera (" +
-                     "empleado_id INT PRIMARY KEY, " +
+        		     "recamarera_id INT AUTO_INCREMENT PRIMARY KEY, "  +
+                     "empleado_id INT NOT NULL, " +
                      "nivel_experiencia VARCHAR(255) NOT NULL, " +
                      "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
                      ");";
@@ -71,7 +73,8 @@ public class InicializarTablas {
 
     public void crearTablaGerente() {
         String sql = "CREATE TABLE IF NOT EXISTS gerente (" +
-                     "empleado_id INT PRIMARY KEY, " +
+        			 "gerente_id INT AUTO_INCREMENT PRIMARY KEY, "+
+                     "empleado_id INT NOT NULL, " +
                      "bono DOUBLE NOT NULL, " +
                      "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
                      ");";
@@ -86,7 +89,8 @@ public class InicializarTablas {
 
     public void crearTablaVendedor() {
         String sql = "CREATE TABLE IF NOT EXISTS vendedor (" +
-                     "empleado_id INT PRIMARY KEY, " +
+                     "vendedor_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "empleado_id INT NOT NULL, " +
                      "comision DOUBLE NOT NULL, " +
                      "FOREIGN KEY (empleado_id) REFERENCES empleado(empleado_id)" +
                      ");";
@@ -98,6 +102,7 @@ public class InicializarTablas {
             System.err.println("Error al crear la tabla 'vendedor': " + e.getMessage());
         }
     }
+
 
     public void crearTablaEmpleadoHotel() {
         String sql = "CREATE TABLE IF NOT EXISTS empleado_hotel (" +
@@ -135,5 +140,29 @@ public class InicializarTablas {
             System.err.println("Error al crear la tabla 'habitacion': " + e.getMessage());
         }
     }
+
+    public void crearTablaReservacion() {
+        String sql = "CREATE TABLE IF NOT EXISTS reservacion (" +
+                     "reservacion_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "vendedor_id INT NOT NULL, " +
+                     "hotel_id INT NOT NULL, " +
+                     "habitacion_id INT NOT NULL, " +
+                     "numero_personas INT NOT NULL, " +
+                     "fecha_registro DATE NOT NULL, " +
+                     "duracion_estadia INT NOT NULL, " +
+                     "costo DOUBLE NOT NULL, " +
+                     "FOREIGN KEY (vendedor_id) REFERENCES vendedor(empleado_id), " + // Referencia correcta
+                     "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id), " +
+                     "FOREIGN KEY (habitacion_id) REFERENCES habitacion(habitacion_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'reservacion' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'reservacion': " + e.getMessage());
+        }
+    }
+
 
 }
