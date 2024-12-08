@@ -19,7 +19,7 @@ public class HotelService {
 
     public int agregarHotel(String nombre, int estrellas, String direccion, String telefono) throws SQLException {
         String sqlHotel = "INSERT INTO hotel (nombre, estrellas, direccion, telefono) VALUES (?, ?, ?, ?)";
-        String sqlHabitacion = "INSERT INTO habitacion (hotel_id, id, tipo) VALUES (?, ?, ?)";
+        String sqlHabitacion = "INSERT INTO habitacion (hotel_id, id, tipo, disponible, numero_personas, recamarera_id) VALUES (?, ?, ?, ?, ?, ?)";
         Connection connection = null;
         int hotelId = -1;
 
@@ -45,23 +45,35 @@ public class HotelService {
                 }
 
                 if (hotelId != -1) {
-                    // Insertar habitaciones para el hotel
+                    // Insertar habitaciones para el hotel usando HabitacionBean
                     for (int i = 1; i <= 20; i++) {
-                        statementHabitacion.setInt(1, hotelId);
-                        statementHabitacion.setString(2, "S-" + i);
-                        statementHabitacion.setString(3, "sencilla");
+                        HabitacionBean habitacion = new HabitacionBean(0, hotelId, "S-" + i, "sencilla", true, 0, null);
+                        statementHabitacion.setInt(1, habitacion.getHotelId());
+                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(3, habitacion.getTipo());
+                        statementHabitacion.setBoolean(4, habitacion.isDisponible());
+                        statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
+                        statementHabitacion.setNull(6, java.sql.Types.INTEGER);  // recamarera_id nulo
                         statementHabitacion.addBatch();
                     }
                     for (int i = 1; i <= 15; i++) {
-                        statementHabitacion.setInt(1, hotelId);
-                        statementHabitacion.setString(2, "D-" + i);
-                        statementHabitacion.setString(3, "doble");
+                        HabitacionBean habitacion = new HabitacionBean(0, hotelId, "D-" + i, "doble", true, 0, null);
+                        statementHabitacion.setInt(1, habitacion.getHotelId());
+                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(3, habitacion.getTipo());
+                        statementHabitacion.setBoolean(4, habitacion.isDisponible());
+                        statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
+                        statementHabitacion.setNull(6, java.sql.Types.INTEGER);  // recamarera_id nulo
                         statementHabitacion.addBatch();
                     }
                     for (int i = 1; i <= 5; i++) {
-                        statementHabitacion.setInt(1, hotelId);
-                        statementHabitacion.setString(2, "P-" + i);
-                        statementHabitacion.setString(3, "penthouse");
+                        HabitacionBean habitacion = new HabitacionBean(0, hotelId, "P-" + i, "penthouse", true, 0, null);
+                        statementHabitacion.setInt(1, habitacion.getHotelId());
+                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(3, habitacion.getTipo());
+                        statementHabitacion.setBoolean(4, habitacion.isDisponible());
+                        statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
+                        statementHabitacion.setNull(6, java.sql.Types.INTEGER);  // recamarera_id nulo
                         statementHabitacion.addBatch();
                     }
 
@@ -82,6 +94,7 @@ public class HotelService {
         }
         return hotelId;  // Devolver el ID del hotel para asociar gerentes
     }
+
 
 
 
@@ -133,9 +146,17 @@ public class HotelService {
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
+                        int habitacionId = resultSet.getInt("habitacion_id");
+                        int hotelId = resultSet.getInt("hotel_id");
                         String id = resultSet.getString("id");
                         String tipo = resultSet.getString("tipo");
-                        HabitacionBean habitacion = new HabitacionBean(id, tipo);
+                        boolean disponible = resultSet.getBoolean("disponible");
+                        int numeroPersonas = resultSet.getInt("numero_personas");
+                        Integer recamareraId = resultSet.getObject("recamarera_id") != null ? resultSet.getInt("recamarera_id") : null;
+
+                        HabitacionBean habitacion = new HabitacionBean(
+                            habitacionId, hotelId, id, tipo, disponible, numeroPersonas, recamareraId
+                        );
                         habitaciones.add(habitacion);
                     }
                 }
@@ -144,6 +165,7 @@ public class HotelService {
 
         return habitaciones;
     }
+
 
     public HotelBean buscarHotelPorNombre(String nombreHotel) throws SQLException {
         try (Connection connection = conexionDataBase.getConnection()) {
