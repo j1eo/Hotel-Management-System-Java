@@ -6,20 +6,47 @@ public class HabitacionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String ID;
+    private int habitacionId;
+    private int hotelId;
+    private String id;
     private String tipo;
+    private boolean disponible;
+    private int numeroPersonas;
+    private Integer recamareraId;  // Puede ser nulo
 
-    public HabitacionBean(String ID, String tipo) {
-        this.ID = ID;
+    public HabitacionBean(int habitacionId, int hotelId, String id, String tipo, boolean disponible, int numeroPersonas, Integer recamareraId) {
+        this.habitacionId = habitacionId;
+        this.hotelId = hotelId;
+        this.id = id;
         this.tipo = tipo;
+        this.disponible = disponible;
+        this.numeroPersonas = numeroPersonas;
+        this.recamareraId = recamareraId;
+    }
+
+    // Getters y Setters
+    public int getHabitacionId() {
+        return habitacionId;
+    }
+
+    public void setHabitacionId(int habitacionId) {
+        this.habitacionId = habitacionId;
+    }
+
+    public int getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(int hotelId) {
+        this.hotelId = hotelId;
     }
 
     public String getID() {
-        return ID;
+        return id;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTipo() {
@@ -28,5 +55,29 @@ public class HabitacionBean implements Serializable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public boolean isDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    public int getNumeroPersonas() {
+        return numeroPersonas;
+    }
+
+    public void setNumeroPersonas(int numeroPersonas) {
+        this.numeroPersonas = numeroPersonas;
+    }
+
+    public Integer getRecamareraId() {
+        return recamareraId;
+    }
+
+    public void setRecamareraId(Integer recamareraId) {
+        this.recamareraId = recamareraId;
     }
 }

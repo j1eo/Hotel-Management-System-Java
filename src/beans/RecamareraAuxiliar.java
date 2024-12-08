@@ -10,8 +10,8 @@ public class RecamareraAuxiliar extends RecamareraBean {
 	public RecamareraAuxiliar() {}
 
     // Constructor que pasa una lista vacía de habitaciones
-    public RecamareraAuxiliar(String nombre, double salarioBase) {
-        super(nombre, nivelExperiencia, salarioBase);
+    public RecamareraAuxiliar(String nombre) {
+        super(nombre, nivelExperiencia);
     }
 
     @Override

@@ -6,8 +6,8 @@ public class AmaDeLlavesBean extends RecamareraBean {
     public AmaDeLlavesBean() {
     }
 
-    public AmaDeLlavesBean(String nombre, double salarioBase) {
-        super(nombre, "Ama de Llaves", salarioBase);
+    public AmaDeLlavesBean(String nombre) {
+        super(nombre, "Ama de Llaves");
     }
 
     @Override

@@ -11,8 +11,8 @@ public class RecamareraExperimentadaBean extends RecamareraBean {
 	}// constructor vacio
 
 	// Constructor que pasa una lista vacía de habitaciones
-	public RecamareraExperimentadaBean(String nombre, double salarioBase) {
-		super(nombre, nivelExperiencia, salarioBase); // Llamada al constructor de la clase base
+	public RecamareraExperimentadaBean(String nombre) {
+		super(nombre, nivelExperiencia); // Llamada al constructor de la clase base
 	}
 
 	@Override

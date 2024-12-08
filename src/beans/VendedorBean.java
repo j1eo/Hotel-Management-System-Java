@@ -3,25 +3,28 @@ package beans;
 public class VendedorBean extends EmpleadoBean {
 
 	private static final long serialVersionUID = 1L;
+	private int vendedorId;
 	private double comision;
 
 	// Constructor vacío
-	public VendedorBean() {}
+	public VendedorBean() {
+	}
 
 	// Constructor completo
-	public VendedorBean(String nombre, double salario, double comision) {
-        super(nombre, salario);
-        this.comision = comision;
-    }
+	public VendedorBean(int vendedorId, String nombre) {
+		super(nombre,4500.00);
+		this.vendedorId = vendedorId;
+	}
 
 	// Getters y Setters
-	public double getComision() {
-		return comision;
+	public int getVendedorId() {
+		return vendedorId;
 	}
 
-	public void setComision(double comision) {
-		this.comision = comision;
+	public void setVendedorId(int vendedorId) {
+		this.vendedorId = vendedorId;
 	}
+
 
 	// Implementación de calcularSalario()
 	@Override

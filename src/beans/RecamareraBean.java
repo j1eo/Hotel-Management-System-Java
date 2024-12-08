@@ -14,8 +14,8 @@ public abstract class RecamareraBean extends EmpleadoBean {
     }
 
     // Constructor con parámetros
-    public RecamareraBean(String nombre, String nivelExperiencia, double salarioBase) {
-        super(nombre, salarioBase);
+    public RecamareraBean(String nombre, String nivelExperiencia) {
+        super(nombre, 1500.00);
         this.nivelExperiencia = nivelExperiencia;
         this.habitacionesAsignadas = new ArrayList<>();
     }

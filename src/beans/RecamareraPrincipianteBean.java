@@ -10,8 +10,8 @@ public class RecamareraPrincipianteBean extends RecamareraBean{
 	public RecamareraPrincipianteBean() {}
 
     // Constructor que pasa una lista vacía de habitaciones
-    public RecamareraPrincipianteBean(String nombre, double salarioBase) {
-        super(nombre, nivelExperiencia, salarioBase);
+    public RecamareraPrincipianteBean(String nombre) {
+        super(nombre, nivelExperiencia);
     }
 
     @Override
