@@ -59,25 +59,9 @@ public class EmpleadoService {
 		}
 	}
 
-	private double obtenerSalarioFijo(String tipoEmpleado) {
-		switch (tipoEmpleado) {
-		case "Recamarera Auxiliar":
-		case "Recamarera Principiante":
-		case "Recamarera Experimentada":
-		case "Ama de Llaves":
-			return 1500.00 * 4; // Salario semanal multiplicado por 4 para obtener el mensual
-		case "Vendedor":
-			return 4500.00 * 2; // Salario quincenal multiplicado por 2 para obtener el mensual
-		case "Gerente":
-			return 18000.00; // Salario mensual fijo
-		default:
-			throw new IllegalArgumentException("Tipo de empleado desconocido: " + tipoEmpleado);
-		}
-	}
-
-	public void agregarGerente(String nombre, double bono, int hotelId) throws SQLException {
+	public void agregarGerente(String nombre,  int hotelId) throws SQLException {
 		String sqlEmpleado = "INSERT INTO empleado (nombre, salario, tipo) VALUES (?, 18000.0, 'Gerente')";
-		String sqlGerente = "INSERT INTO gerente (empleado_id, bono) VALUES (?, ?)";
+		String sqlGerente = "INSERT INTO gerente (empleado_id, bono) VALUES (?, 0)";
 		String sqlEmpleadoHotel = "INSERT INTO empleado_hotel (empleado_id, hotel_id) VALUES (?, ?)";
 
 		try (Connection connection = conexionDataBase.getConnection();
@@ -101,7 +85,7 @@ public class EmpleadoService {
 
 			// Insertar el gerente en la tabla gerente
 			statementGerente.setInt(1, empleadoId);
-			statementGerente.setDouble(2, bono); // Bono inicial
+		
 			statementGerente.executeUpdate();
 
 			// Asociar el empleado con el hotel en la tabla empleado_hotel
@@ -116,18 +100,109 @@ public class EmpleadoService {
 		}
 	}
 
-	public void agregarRecamarera(int empleadoId, String nivelExperiencia) throws SQLException {
-		String sqlRecamarera = "INSERT INTO recamarera (empleado_id, nivel_experiencia) VALUES (?, ?)";
-		try (Connection connection = conexionDataBase.getConnection();
-				PreparedStatement statementRecamarera = connection.prepareStatement(sqlRecamarera)) {
+	public void agregarRecamarera(String nombre, String nivelExperiencia, int hotelId) throws SQLException {
+	    String sqlEmpleado = "INSERT INTO empleado (nombre, salario, tipo) VALUES (?, ?, 'Recamarera')";
+	    String sqlRecamarera = "INSERT INTO recamarera (empleado_id, nivel_experiencia) VALUES (?, ?)";
+	    String sqlEmpleadoHotel = "INSERT INTO empleado_hotel (empleado_id, hotel_id) VALUES (?, ?)";
+	    double salario = obtenerSalarioFijo(nivelExperiencia);
 
-			// Insertar la recamarera en la base de datos
-			statementRecamarera.setInt(1, empleadoId);
-			statementRecamarera.setString(2, nivelExperiencia);
-			statementRecamarera.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw e;
+	    try (Connection connection = conexionDataBase.getConnection();
+	         PreparedStatement statementEmpleado = connection.prepareStatement(sqlEmpleado, PreparedStatement.RETURN_GENERATED_KEYS);
+	         PreparedStatement statementRecamarera = connection.prepareStatement(sqlRecamarera);
+	         PreparedStatement statementEmpleadoHotel = connection.prepareStatement(sqlEmpleadoHotel)) {
+
+	        connection.setAutoCommit(false);
+
+	        // Insertar el empleado en la tabla empleado
+	        statementEmpleado.setString(1, nombre);
+	        statementEmpleado.setDouble(2, salario);
+	        statementEmpleado.executeUpdate();
+
+	        // Obtener el ID generado del empleado
+	        ResultSet generatedKeys = statementEmpleado.getGeneratedKeys();
+	        int empleadoId = -1;
+	        if (generatedKeys.next()) {
+	            empleadoId = generatedKeys.getInt(1);
+	        }
+
+	        // Insertar la recamarera en la tabla recamarera
+	        statementRecamarera.setInt(1, empleadoId);
+	        statementRecamarera.setString(2, nivelExperiencia);
+	        statementRecamarera.executeUpdate();
+
+	        // Asociar el empleado con el hotel en la tabla empleado_hotel
+	        statementEmpleadoHotel.setInt(1, empleadoId);
+	        statementEmpleadoHotel.setInt(2, hotelId);
+	        statementEmpleadoHotel.executeUpdate();
+
+	        connection.commit();
+	    } catch (SQLException e) {
+	        e.printStackTrace();      
+	        throw e;
+	    }
+	}
+
+	
+	public void agregarVendedor(String nombre, int hotelId) throws SQLException {
+	    String sqlEmpleado = "INSERT INTO empleado (nombre, salario, tipo) VALUES (?, 4500.0, 'Vendedor')";
+	    String sqlVendedor = "INSERT INTO vendedor (empleado_id, comision) VALUES (?, 0)";
+	    String sqlEmpleadoHotel = "INSERT INTO empleado_hotel (empleado_id, hotel_id) VALUES (?, ?)";
+
+	    try (Connection connection = conexionDataBase.getConnection();
+	         PreparedStatement statementEmpleado = connection.prepareStatement(sqlEmpleado, PreparedStatement.RETURN_GENERATED_KEYS);
+	         PreparedStatement statementVendedor = connection.prepareStatement(sqlVendedor);
+	         PreparedStatement statementEmpleadoHotel = connection.prepareStatement(sqlEmpleadoHotel)) {
+
+	        connection.setAutoCommit(false);
+
+	        // Insertar el empleado en la tabla empleado
+	        statementEmpleado.setString(1, nombre);
+	        statementEmpleado.executeUpdate();
+
+	        // Obtener el ID generado del empleado
+	        ResultSet generatedKeys = statementEmpleado.getGeneratedKeys();
+	        int empleadoId = -1;
+	        if (generatedKeys.next()) {
+	            empleadoId = generatedKeys.getInt(1);
+	        }
+
+	        if (empleadoId == -1) {
+	            throw new SQLException("No se pudo obtener el ID del empleado generado.");
+	        }
+
+	        // Insertar el vendedor en la tabla vendedor
+	        statementVendedor.setInt(1, empleadoId);
+	        statementVendedor.executeUpdate();
+
+	        // Asociar el empleado con el hotel en la tabla empleado_hotel
+	        statementEmpleadoHotel.setInt(1, empleadoId);
+	        statementEmpleadoHotel.setInt(2, hotelId);
+	        statementEmpleadoHotel.executeUpdate();
+
+	        connection.commit();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	       
+	        
+	    }
+	}
+
+
+
+
+	private double obtenerSalarioFijo(String tipoEmpleado) {
+		switch (tipoEmpleado) {
+		case "Recamarera Auxiliar":
+		case "Recamarera Principiante":
+		case "Recamarera Experimentada":
+		case "Ama de Llaves":
+			return 1500.00 * 4; // Salario semanal multiplicado por 4 para obtener el mensual
+		case "Vendedor":
+			return 4500.00 * 2; // Salario quincenal multiplicado por 2 para obtener el mensual
+		case "Gerente":
+			return 18000.00; // Salario mensual fijo
+		default:
+			throw new IllegalArgumentException("Tipo de empleado desconocido: " + tipoEmpleado);
 		}
 	}
 
@@ -149,6 +224,7 @@ public class EmpleadoService {
 					int hotelID = rs.getInt("hotel_id");
 					empleados.add(String.format("Hotel: %s - ID: %d", hotelNombre, hotelID));
 					hotelInfoAdded = true;
+					System.out.println("Hotel: " + hotelNombre + " - ID: " + hotelID); // Depuración
 				}
 
 				int empleadoId = rs.getInt("empleado_id");
@@ -158,6 +234,7 @@ public class EmpleadoService {
 				String empleadoInfo = String.format("ID: %d, Nombre: %s, Puesto: %s", empleadoId, empleadoNombre,
 						puesto);
 				empleados.add(empleadoInfo);
+				System.out.println("Empleado: " + empleadoInfo); // Depuración
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -210,35 +287,34 @@ public class EmpleadoService {
 	}
 
 	public boolean modificarEmpleado(int hotelId, int empleadoId, String nombre, String nuevoTipoEmpleado) {
-	    double salario = this.obtenerSalarioFijo(nuevoTipoEmpleado);
-	    String verificarEmpleado = "SELECT * FROM empleado_hotel WHERE hotel_id = ? AND empleado_id = ?";
-	    String actualizarEmpleado = "UPDATE empleado SET nombre = ?, salario = ?, tipo = ? WHERE empleado_id = ?";
+		double salario = this.obtenerSalarioFijo(nuevoTipoEmpleado);
+		String verificarEmpleado = "SELECT * FROM empleado_hotel WHERE hotel_id = ? AND empleado_id = ?";
+		String actualizarEmpleado = "UPDATE empleado SET nombre = ?, salario = ?, tipo = ? WHERE empleado_id = ?";
 
-	    try (Connection connection = conexionDataBase.getConnection();
-	         PreparedStatement stmtVerificar = connection.prepareStatement(verificarEmpleado); 
-	         PreparedStatement stmtActualizar = connection.prepareStatement(actualizarEmpleado)) {
-	        
-	        stmtVerificar.setInt(1, hotelId);
-	        stmtVerificar.setInt(2, empleadoId);
-	        ResultSet rs = stmtVerificar.executeQuery();
-	        
-	        if (rs.next()) { // Actualizar los datos del empleado
-	            stmtActualizar.setString(1, nombre);
-	            stmtActualizar.setDouble(2, salario);
-	            stmtActualizar.setString(3, nuevoTipoEmpleado);
-	            stmtActualizar.setInt(4, empleadoId);
-	            stmtActualizar.executeUpdate();
-	            return true;
-	        } else {
-	            System.err.println("El empleado no pertenece al hotel especificado.");
-	            return false;
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+		try (Connection connection = conexionDataBase.getConnection();
+				PreparedStatement stmtVerificar = connection.prepareStatement(verificarEmpleado);
+				PreparedStatement stmtActualizar = connection.prepareStatement(actualizarEmpleado)) {
+
+			stmtVerificar.setInt(1, hotelId);
+			stmtVerificar.setInt(2, empleadoId);
+			ResultSet rs = stmtVerificar.executeQuery();
+
+			if (rs.next()) { // Actualizar los datos del empleado
+				stmtActualizar.setString(1, nombre);
+				stmtActualizar.setDouble(2, salario);
+				stmtActualizar.setString(3, nuevoTipoEmpleado);
+				stmtActualizar.setInt(4, empleadoId);
+				stmtActualizar.executeUpdate();
+				return true;
+			} else {
+				System.err.println("El empleado no pertenece al hotel especificado.");
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-
 
 	public boolean eliminarEmpleado(int empleadoId) {
 		String sql = "DELETE FROM empleado WHERE empleado_id = ?";
@@ -259,16 +335,16 @@ public class EmpleadoService {
 		EmpleadoBean empleado;
 		switch (tipo) {
 		case "RecamareraAuxiliar":
-			empleado = new RecamareraAuxiliar(nombre, salario);
+			empleado = new RecamareraAuxiliar(nombre);
 			break;
 		case "RecamareraPrincipiante":
-			empleado = new RecamareraPrincipianteBean(nombre, salario);
+			empleado = new RecamareraPrincipianteBean(nombre);
 			break;
 		case "RecamareraExperimentada":
-			empleado = new RecamareraExperimentadaBean(nombre, salario);
+			empleado = new RecamareraExperimentadaBean(nombre);
 			break;
 		case "AmaDeLlaves":
-			empleado = new AmaDeLlavesBean(nombre, salario);
+			empleado = new AmaDeLlavesBean(nombre);
 			break;
 		case "Gerente":
 			double bono = obtenerBonoGerente(empleadoId); // Método para obtener el bono del gerente

@@ -1,6 +1,7 @@
 package controllers;
 
 import services.EmpleadoService;
+import services.HotelService;
 import views.EmpleadoViews;
 import beans.EmpleadoBean;
 import beans.RecamareraAuxiliar;
@@ -8,6 +9,9 @@ import beans.RecamareraExperimentadaBean;
 import beans.RecamareraPrincipianteBean;
 import beans.AmaDeLlavesBean;
 import beans.GerenteBean;
+import beans.HotelBean;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.util.List;
@@ -16,10 +20,12 @@ public class EmpleadoController {
 
     private final EmpleadoService empleadoService;
     private final EmpleadoViews empleadoViews;
+    private final HotelService hotelService;
 
-    public EmpleadoController(EmpleadoService empleadoService, EmpleadoViews empleadoViews) {
+    public EmpleadoController(EmpleadoService empleadoService, EmpleadoViews empleadoViews, HotelService hotelService) {
         this.empleadoService = empleadoService;
         this.empleadoViews = empleadoViews;
+        this.hotelService = hotelService;
     }
 
     public void evalOption(Object selectedOption) {
@@ -50,6 +56,49 @@ public class EmpleadoController {
                 break;
         }
     }
+    
+    public void evalEmpleado(int hotelId, Object selectedOption, String nombre) {
+        if (selectedOption == null) {
+            return;
+        }
+
+        String parsedSelectedOption = selectedOption.toString();
+
+        switch (parsedSelectedOption) {
+            case "Recamarera Auxiliar":
+            case "Recamarera Principiante":
+            case "Recamarera Experimentada":
+            case "Ama de Llaves":
+                try {
+                    empleadoService.agregarRecamarera(nombre, parsedSelectedOption, hotelId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Vendedor":
+                try {
+                    empleadoService.agregarVendedor(nombre, hotelId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Gerente":
+                try {
+                    empleadoService.agregarGerente(nombre, hotelId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Salir":
+                empleadoViews.mostrarMensaje("Saliendo del sistema de empleados...");
+                break;
+            default:
+                empleadoViews.mostrarMensaje("Opción inválida. Intenta de nuevo.");
+                break;
+        }
+    }
+
+
 
     public void agregarEmpleado(String tipoEmpleado, String nombre, int hotelId) {
         try {
@@ -64,29 +113,13 @@ public class EmpleadoController {
     public void agregarGerente(String nombre, int hotelId) {
         try {
             double bono = 2000.0;  // Bono fijo
-            empleadoService.agregarGerente(nombre, bono, hotelId);
+            empleadoService.agregarGerente(nombre, hotelId);
             empleadoViews.mostrarMensaje("Gerente agregado exitosamente.");
         } catch (Exception e) {
             empleadoViews.mostrarMensaje("Error al agregar el gerente: " + e.getMessage());
         }
     }
 
-    private EmpleadoBean crearEmpleado(String tipo, String nombre, double salario) {
-        switch (tipo) {
-            case "RecamareraAuxiliar":
-                return new RecamareraAuxiliar(nombre, salario);
-            case "RecamareraPrincipiante":
-                return new RecamareraPrincipianteBean(nombre, salario);
-            case "RecamareraExperimentada":
-                return new RecamareraExperimentadaBean(nombre, salario);
-            case "Ama de Llaves":
-                return new AmaDeLlavesBean(nombre, salario);
-            case "Gerente":
-                return new GerenteBean(nombre, 0);  // Bono fijo
-            default:
-                throw new IllegalArgumentException("Tipo de empleado desconocido: " + tipo);
-        }
-    }
 
     public void modificarEmpleado(int HotelId, int empleadoId, String nombre, String nuevoTipoEmpleado) {
         try {
@@ -119,12 +152,34 @@ public class EmpleadoController {
     private void listarEmpleadosPorHotel() {
         try {
             int hotelId = Integer.parseInt(JOptionPane.showInputDialog("Ingresa el ID del hotel:"));
+
+            // Obtener el nombre del hotel para buscar la información completa
+            HotelBean hotel = null;
+            for (HotelBean h : hotelService.listarHoteles()) {
+                if (h.getHotelId() == hotelId) {
+                    hotel = h;
+                    break;
+                }
+            }
+
+            if (hotel == null) {
+                throw new IllegalArgumentException("Hotel no encontrado con ID: " + hotelId);
+            }
+
             List<String> empleados = empleadoService.listarEmpleadosPorHotelId(hotelId);
-            empleadoViews.mostrarListaEmpleados(empleados);
+            if (empleados != null && !empleados.isEmpty()) {
+                empleadoViews.mostrarListaEmpleados(hotel, empleados); // Pasar la lista de empleados con la información del hotel incluida
+            } else {
+                empleadoViews.mostrarMensaje("No se encontraron empleados para el hotel con ID: " + hotelId);
+            }
         } catch (Exception e) {
             empleadoViews.mostrarMensaje("Error al listar los empleados: " + e.getMessage());
         }
     }
+
+
+
+
 
 
 }
