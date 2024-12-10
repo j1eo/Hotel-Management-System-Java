@@ -149,14 +149,14 @@ public class InicializarTablas {
     public void crearTablaReservacion() {
         String sql = "CREATE TABLE IF NOT EXISTS reservacion (" +
                      "reservacion_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                     "vendedor_id INT NOT NULL, " +
+                     "empleado_id INT NOT NULL, " +
                      "hotel_id INT NOT NULL, " +
                      "habitacion_id INT NOT NULL, " +
                      "numero_personas INT NOT NULL, " +
                      "fecha_registro DATE NOT NULL, " +
                      "duracion_estadia INT NOT NULL, " +
                      "costo DOUBLE NOT NULL, " +
-                     "FOREIGN KEY (vendedor_id) REFERENCES vendedor(empleado_id), " + // Referencia correcta
+                     "FOREIGN KEY (empleado_id) REFERENCES vendedor(empleado_id), " + // Referencia correcta
                      "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id), " +
                      "FOREIGN KEY (habitacion_id) REFERENCES habitacion(habitacion_id)" +
                      ");";
@@ -191,7 +191,7 @@ public class InicializarTablas {
     }
 
     public void crearTablaComisionVendedor() {
-        String sql = "CREATE TABLE IF NOT EXISTS ComisionVendedor (" +
+        String sql = "CREATE TABLE IF NOT EXISTS comisionvendedor (" +
                      "comision_id INT AUTO_INCREMENT PRIMARY KEY, " +
                      "empleado_id INT NOT NULL, " +
                      "hotel_id INT NOT NULL, " +
@@ -205,11 +205,12 @@ public class InicializarTablas {
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
-            System.out.println("Tabla 'ComisionVendedor' creada o ya existe.");
+            System.out.println("Tabla 'comisionvendedor' creada o ya existe.");
         } catch (SQLException e) {
-            System.err.println("Error al crear la tabla 'ComisionVendedor': " + e.getMessage());
+            System.err.println("Error al crear la tabla 'comisionvendedor': " + e.getMessage());
         }
     }
+
 
     public void crearTablaBonoGerente() {
         String sql = "CREATE TABLE IF NOT EXISTS BonoGerente (" +
