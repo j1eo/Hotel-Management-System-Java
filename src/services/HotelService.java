@@ -49,7 +49,7 @@ public class HotelService {
                     for (int i = 1; i <= 20; i++) {
                         HabitacionBean habitacion = new HabitacionBean(0, hotelId, "S-" + i, "sencilla", true, 0, null);
                         statementHabitacion.setInt(1, habitacion.getHotelId());
-                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(2, habitacion.getId());
                         statementHabitacion.setString(3, habitacion.getTipo());
                         statementHabitacion.setBoolean(4, habitacion.isDisponible());
                         statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
@@ -59,7 +59,7 @@ public class HotelService {
                     for (int i = 1; i <= 15; i++) {
                         HabitacionBean habitacion = new HabitacionBean(0, hotelId, "D-" + i, "doble", true, 0, null);
                         statementHabitacion.setInt(1, habitacion.getHotelId());
-                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(2, habitacion.getId());
                         statementHabitacion.setString(3, habitacion.getTipo());
                         statementHabitacion.setBoolean(4, habitacion.isDisponible());
                         statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
@@ -69,7 +69,7 @@ public class HotelService {
                     for (int i = 1; i <= 5; i++) {
                         HabitacionBean habitacion = new HabitacionBean(0, hotelId, "P-" + i, "penthouse", true, 0, null);
                         statementHabitacion.setInt(1, habitacion.getHotelId());
-                        statementHabitacion.setString(2, habitacion.getID());
+                        statementHabitacion.setString(2, habitacion.getId());
                         statementHabitacion.setString(3, habitacion.getTipo());
                         statementHabitacion.setBoolean(4, habitacion.isDisponible());
                         statementHabitacion.setInt(5, habitacion.getNumeroPersonas());
@@ -127,7 +127,7 @@ public class HotelService {
 
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, hotel.getHotelId());
-                statement.setString(2, habitacion.getID());
+                statement.setString(2, habitacion.getId());
                 statement.setString(3, habitacion.getTipo());
                 statement.executeUpdate();
             }
@@ -173,7 +173,7 @@ public class HotelService {
         }
     }
 
-    private HotelBean buscarHotelPorNombre(String nombreHotel, Connection connection) throws SQLException {
+    HotelBean buscarHotelPorNombre(String nombreHotel, Connection connection) throws SQLException {
         String sql = "SELECT * FROM hotel WHERE nombre = ?";
         HotelBean hotel = null;
 
