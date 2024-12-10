@@ -2,15 +2,15 @@ package beans;
 
 
 
-public class RecamareraAuxiliar extends RecamareraBean {
+public class RecamareraAuxiliarBean extends RecamareraBean {
 
 	private static final long serialVersionUID = 1L;
 	private static String nivelExperiencia = "Auxiliar";
 	
-	public RecamareraAuxiliar() {}
+	public RecamareraAuxiliarBean() {}
 
     // Constructor que pasa una lista vacía de habitaciones
-    public RecamareraAuxiliar(String nombre) {
+    public RecamareraAuxiliarBean(String nombre) {
         super(nombre, nivelExperiencia);
     }
 

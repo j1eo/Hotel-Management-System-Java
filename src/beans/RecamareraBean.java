@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public abstract class RecamareraBean extends EmpleadoBean {
     private static final long serialVersionUID = 1L;
 
+    private int recamareraId; // Añadido
     private ArrayList<HabitacionBean> habitacionesAsignadas;
     private String nivelExperiencia;
 
@@ -18,6 +19,14 @@ public abstract class RecamareraBean extends EmpleadoBean {
         super(nombre, 1500.00);
         this.nivelExperiencia = nivelExperiencia;
         this.habitacionesAsignadas = new ArrayList<>();
+    }
+
+    public int getRecamareraId() { // Añadido
+        return recamareraId;
+    }
+
+    public void setRecamareraId(int recamareraId) { // Añadido
+        this.recamareraId = recamareraId;
     }
 
     public ArrayList<HabitacionBean> getHabitacionesAsignadas() {
