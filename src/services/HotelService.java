@@ -209,4 +209,22 @@ public class HotelService {
             statement.executeUpdate();
         }
     }
+    
+    public int obtenerNivelEstrellas(int hotelId) throws SQLException {
+        String sql = "SELECT estrellas FROM hotel WHERE hotel_id = ?";
+        int estrellas = 0;
+
+        try (Connection connection = conexionDataBase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, hotelId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    estrellas = resultSet.getInt("estrellas");
+                }
+            }
+        }
+
+        return estrellas;
+    }
+
 }

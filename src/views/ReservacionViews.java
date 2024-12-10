@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import beans.HabitacionBean;
 import beans.HotelBean;
 import beans.ReservacionBean;
+import controllers.ReservacionController;
 import services.ReservacionService;
 import services.HotelService;
 
@@ -119,65 +120,9 @@ public class ReservacionViews {
         JOptionPane.showMessageDialog(null, scrollPane, titulo, JOptionPane.PLAIN_MESSAGE);
     }
 
-    public void mostrarMenuReservacion(ReservacionService reservacionService, HotelService hotelService) {
+    public void mostrarMenuReservacion(ReservacionController reservacionController) {
         try {
-            int vendedorId = pedirVendedorId();
-
-            List<HotelBean> hoteles = hotelService.listarHoteles();
-            HotelBean hotel = seleccionarHotel(hoteles);
-            if (hotel == null) {
-                mostrarMensaje("Hotel no seleccionado.");
-                return;
-            }
-
-            // Filtrar habitaciones disponibles
-            List<HabitacionBean> habitaciones = hotelService.listarHabitacionesDeHotel(hotel.getNombre())
-                                                           .stream()
-                                                           .filter(HabitacionBean::isDisponible)
-                                                           .collect(Collectors.toList());
-
-            if (habitaciones.isEmpty()) {
-                mostrarMensaje("No hay habitaciones disponibles en este hotel.");
-                return;
-            }
-
-            HabitacionBean habitacion = seleccionarHabitacion(habitaciones);
-            if (habitacion == null) {
-                mostrarMensaje("Habitación no seleccionada.");
-                return;
-            }
-
-            int numeroPersonas = pedirNumeroPersonas();
-
-            Date fechaRegistro = pedirFechaRegistro();
-            if (fechaRegistro == null) {
-                mostrarMensaje("Fecha de registro no seleccionada.");
-                return;
-            }
-
-            int duracionEstadia = pedirDuracionEstadia();
-
-            // Utilizar el método calcularCosto del servicio
-            String tipoHabitacion = habitacion.getTipo();
-            int nivelEstrellas = hotel.getEstrellas();
-            System.out.println("Tipo de habitación: " + tipoHabitacion); // Depuración
-            System.out.println("Nivel de estrellas: " + nivelEstrellas); // Depuración
-            double costo = reservacionService.calcularCosto(tipoHabitacion, nivelEstrellas, duracionEstadia);
-            System.out.println("Costo calculado: " + costo); // Depuración
-
-            ReservacionBean reservacion = new ReservacionBean();
-            reservacion.setVendedorId(vendedorId);
-            reservacion.setHotelId(hotel.getHotelId());
-            reservacion.setHabitacionId(habitacion.getHabitacionId());
-            reservacion.setNumeroPersonas(numeroPersonas);
-            reservacion.setFechaRegistro(fechaRegistro);
-            reservacion.setDuracionEstadia(duracionEstadia);
-            reservacion.setCosto(costo);
-
-            reservacionService.agregarReservacion(reservacion);
-            habitacion.setDisponible(false);
-            habitacion.setNumeroPersonas(numeroPersonas);
-            mostrarMensaje("Reservación realizada exitosamente.");
+        	reservacionController.realizarReservacion();
         } catch (Exception e) {
             mostrarMensaje("Error al realizar la reservación: " + e.getMessage());
         }

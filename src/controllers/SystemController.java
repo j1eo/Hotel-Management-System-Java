@@ -55,7 +55,7 @@ public class SystemController {
                 hotelController.listarHabitacionesDeHotel();
                 break;
             case "Realizar Reservacion":
-                reservacionViews.mostrarMenuReservacion(reservacionService, hotelService);
+                reservacionViews.mostrarMenuReservacion(reservacionController);
                 break;
             case "Información de Comisiones":
                 JOptionPane.showMessageDialog(null, "Funcionalidad no implementada.");

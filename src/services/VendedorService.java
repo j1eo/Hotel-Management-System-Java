@@ -16,6 +16,33 @@ public class VendedorService {
     public VendedorService(ConexionDataBase conexionDataBase) {
         this.conexionDataBase = conexionDataBase;
     }
+    public VendedorBean obtenerVendedorPorEmpleadoId(int empleadoId) throws SQLException {
+        String sql = "SELECT * FROM vendedor WHERE empleado_id = ?";
+        VendedorBean vendedor = null;
+
+        try (Connection connection = conexionDataBase.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, empleadoId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    vendedor = new VendedorBean();
+                    vendedor.setVendedorId(resultSet.getInt("vendedor_id"));
+                    vendedor.setEmpleadoId(resultSet.getInt("empleado_id"));
+                    vendedor.setComision(resultSet.getDouble("comision"));
+                } else {
+                    System.err.println("El vendedor con empleado_id " + empleadoId + " no existe.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error SQL: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        return vendedor;
+    }
+
+
 
     public VendedorBean obtenerVendedorPorId(int vendedorId) throws SQLException {
         String sql = "SELECT * FROM vendedor WHERE vendedor_id = ?";

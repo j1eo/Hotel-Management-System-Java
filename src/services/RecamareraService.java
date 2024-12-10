@@ -1,6 +1,7 @@
 package services;
 
 import beans.AmaDeLlavesBean;
+import beans.ComisionRecamareraBean;
 import beans.HabitacionBean;
 import beans.HotelBean;
 import beans.RecamareraAuxiliarBean;
@@ -12,20 +13,24 @@ import services.HotelService;
 import views.RecamareraViews;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class RecamareraService {
 	
 	private final ConexionDataBase conexionDataBase;
 	private final HotelService hotelService;
+	private final ComisionService comisionService;
 	
-	public RecamareraService(ConexionDataBase conexionDataBase, HotelService hotelService) {
+	public RecamareraService(ConexionDataBase conexionDataBase, HotelService hotelService, ComisionService comisionService) {
 		this.conexionDataBase = conexionDataBase;
 		this.hotelService = hotelService;
+		this.comisionService = comisionService;
 	}
 	
 	public List<String> listarRecamarerasPorHotelId(int hotelId) throws SQLException {
@@ -35,7 +40,7 @@ public class RecamareraService {
 	                 "JOIN empleado_hotel eh ON e.empleado_id = eh.empleado_id " +
 	                 "JOIN hotel h ON eh.hotel_id = h.hotel_id " +
 	                 "JOIN recamarera r ON e.empleado_id = r.empleado_id " +
-	                 "LEFT JOIN habitacion ha ON r.recamarera_id = ha.recamarera_id " +
+	                 "LEFT JOIN habitacion ha ON r.empleado_id = ha.recamarera_id " + // Corrección en la JOIN condition
 	                 "WHERE eh.hotel_id = ?";
 
 	    try (Connection connection = conexionDataBase.getConnection();
@@ -71,6 +76,7 @@ public class RecamareraService {
 
 	    return recamareras;
 	}
+
 
 	  
 	  public List<HabitacionBean> listarHabitacionesSinRecamareraAsignada(int hotelId) throws SQLException {
@@ -213,7 +219,23 @@ public class RecamareraService {
 		        e.printStackTrace();
 		        throw e;
 		    }
+
+		    // Registrar la comisión después de la transacción principal
+		    int nivelEstrellas = hotelService.obtenerNivelEstrellas(habitacion.getHotelId());
+		    double comisionMonto = comisionService.calcularComisionRecamarera(habitacion.getTipo(), nivelEstrellas);
+		    ComisionRecamareraBean comision = new ComisionRecamareraBean(
+		            0,
+		            recamarera.getEmpleadoId(),
+		            habitacion.getHotelId(),
+		            comisionMonto,
+		            new Date(Calendar.getInstance().getTimeInMillis()),
+		            habitacion.getTipo(),
+		            1,
+		            habitacion.getHabitacionId()
+		    );
+		    comisionService.registrarComisionRecamarera(comision);
 		}
+
 
 		private boolean recamareraIdExiste(int recamareraId) throws SQLException {
 		    String sql = "SELECT 1 FROM recamarera WHERE recamarera_id = ?";
@@ -225,11 +247,6 @@ public class RecamareraService {
 		        }
 		    }
 		}
-
-
-
-
-
 
 	  
 	  public void verificarYActualizarAsignacionesExpiradas() throws SQLException {

@@ -8,6 +8,8 @@ import dataBase.InicializarTablas;
 import dataBase.LoadConfig;
 import services.HotelService;
 import services.RecamareraService;
+import services.BonoService;
+import services.ComisionService;
 import services.EmpleadoService;
 import services.ReservacionService;
 import services.VendedorService;
@@ -49,10 +51,12 @@ public class Main {
 
 			// Crear servicios
 			HotelService hotelService = new HotelService(conexionDataBase);
+			ComisionService comisionService = new ComisionService(conexionDataBase);
+			BonoService bonoService = new BonoService(conexionDataBase);
 			EmpleadoService empleadoService = new EmpleadoService(conexionDataBase);
 			ReservacionService reservacionService = new ReservacionService(conexionDataBase);
 			VendedorService vendedorService = new VendedorService(conexionDataBase);
-			RecamareraService recamareraService = new RecamareraService(conexionDataBase, hotelService);
+			RecamareraService recamareraService = new RecamareraService(conexionDataBase, hotelService, comisionService);
 
 			// Verificar y actualizar reservaciones expiradas al iniciar el programa
 			try {
@@ -76,7 +80,7 @@ public class Main {
 			HotelController hotelController = new HotelController(hotelService, hotelViews, empleadoController,
 					empleadoViews);
 			ReservacionController reservacionController = new ReservacionController(reservacionService, vendedorService,
-					hotelService, reservacionViews);
+					hotelService,comisionService, reservacionViews);
 		
 
 			// Crear SystemController con todos los controladores y vistas
