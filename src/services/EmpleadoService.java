@@ -144,9 +144,10 @@ public class EmpleadoService {
 
 	
 	public void agregarVendedor(String nombre, int hotelId) throws SQLException {
-	    String sqlEmpleado = "INSERT INTO empleado (nombre, salario, tipo) VALUES (?, 4500.0, 'Vendedor')";
+	    String sqlEmpleado = "INSERT INTO empleado (nombre, salario, tipo) VALUES (?, ?, 'Vendedor')";
 	    String sqlVendedor = "INSERT INTO vendedor (empleado_id, comision) VALUES (?, 0)";
 	    String sqlEmpleadoHotel = "INSERT INTO empleado_hotel (empleado_id, hotel_id) VALUES (?, ?)";
+	    double salario = obtenerSalarioFijo("Vendedor");
 
 	    try (Connection connection = conexionDataBase.getConnection();
 	         PreparedStatement statementEmpleado = connection.prepareStatement(sqlEmpleado, PreparedStatement.RETURN_GENERATED_KEYS);
@@ -157,6 +158,7 @@ public class EmpleadoService {
 
 	        // Insertar el empleado en la tabla empleado
 	        statementEmpleado.setString(1, nombre);
+	        statementEmpleado.setDouble(2, salario);
 	        statementEmpleado.executeUpdate();
 
 	        // Obtener el ID generado del empleado
@@ -182,12 +184,9 @@ public class EmpleadoService {
 	        connection.commit();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	       
-	        
+	        throw e;
 	    }
 	}
-
-
 
 
 	private double obtenerSalarioFijo(String tipoEmpleado) {
@@ -196,9 +195,9 @@ public class EmpleadoService {
 		case "Recamarera Principiante":
 		case "Recamarera Experimentada":
 		case "Ama de Llaves":
-			return 1500.00 * 4; // Salario semanal multiplicado por 4 para obtener el mensual
+			return 1500.00; // Salario semanal multiplicado por 4 para obtener el mensual
 		case "Vendedor":
-			return 4500.00 * 2; // Salario quincenal multiplicado por 2 para obtener el mensual
+			return 4500.00; // Salario quincenal multiplicado por 2 para obtener el mensual
 		case "Gerente":
 			return 18000.00; // Salario mensual fijo
 		default:
@@ -207,41 +206,44 @@ public class EmpleadoService {
 	}
 
 	public List<String> listarEmpleadosPorHotelId(int hotelId) {
-		List<String> empleados = new ArrayList<>();
-		String sql = "SELECT h.nombre AS hotel_nombre, h.hotel_id, e.empleado_id, e.nombre, e.tipo "
-				+ "FROM empleado e " + "JOIN empleado_hotel eh ON e.empleado_id = eh.empleado_id "
-				+ "JOIN hotel h ON eh.hotel_id = h.hotel_id " + "WHERE eh.hotel_id = ?";
+	    List<String> empleados = new ArrayList<>();
+	    String sql = "SELECT h.nombre AS hotel_nombre, h.hotel_id, e.empleado_id, e.nombre, e.tipo, e.salario " +
+	                 "FROM empleado e " +
+	                 "JOIN empleado_hotel eh ON e.empleado_id = eh.empleado_id " +
+	                 "JOIN hotel h ON eh.hotel_id = h.hotel_id " +
+	                 "WHERE eh.hotel_id = ?";
 
-		try (Connection connection = conexionDataBase.getConnection();
-				PreparedStatement pstmt = connection.prepareStatement(sql)) {
-			pstmt.setInt(1, hotelId);
-			ResultSet rs = pstmt.executeQuery();
+	    try (Connection connection = conexionDataBase.getConnection();
+	         PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	        pstmt.setInt(1, hotelId);
+	        ResultSet rs = pstmt.executeQuery();
 
-			boolean hotelInfoAdded = false;
-			while (rs.next()) {
-				if (!hotelInfoAdded) {
-					String hotelNombre = rs.getString("hotel_nombre");
-					int hotelID = rs.getInt("hotel_id");
-					empleados.add(String.format("Hotel: %s - ID: %d", hotelNombre, hotelID));
-					hotelInfoAdded = true;
-					System.out.println("Hotel: " + hotelNombre + " - ID: " + hotelID); // Depuración
-				}
+	        boolean hotelInfoAdded = false;
+	        while (rs.next()) {
+	            if (!hotelInfoAdded) {
+	                String hotelNombre = rs.getString("hotel_nombre");
+	                int hotelID = rs.getInt("hotel_id");
+	                empleados.add(String.format("Hotel: %s - ID: %d", hotelNombre, hotelID));
+	                hotelInfoAdded = true;
+	                System.out.println("Hotel: " + hotelNombre + " - ID: " + hotelID); // Depuración
+	            }
 
-				int empleadoId = rs.getInt("empleado_id");
-				String empleadoNombre = rs.getString("nombre");
-				String puesto = rs.getString("tipo");
+	            int empleadoId = rs.getInt("empleado_id");
+	            String empleadoNombre = rs.getString("nombre");
+	            String puesto = rs.getString("tipo");
+	            double salario = rs.getDouble("salario");
 
-				String empleadoInfo = String.format("ID: %d, Nombre: %s, Puesto: %s", empleadoId, empleadoNombre,
-						puesto);
-				empleados.add(empleadoInfo);
-				System.out.println("Empleado: " + empleadoInfo); // Depuración
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	            String empleadoInfo = String.format("ID: %d, Nombre: %s, Puesto: %s, Salario: %.2f", empleadoId, empleadoNombre, puesto, salario);
+	            empleados.add(empleadoInfo);
+	            System.out.println("Empleado: " + empleadoInfo); // Depuración
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 
-		return empleados;
+	    return empleados;
 	}
+
 
 	public ArrayList<RecamareraBean> listarRecamareras() {
 		ArrayList<RecamareraBean> recamareras = new ArrayList<>();
@@ -335,7 +337,7 @@ public class EmpleadoService {
 		EmpleadoBean empleado;
 		switch (tipo) {
 		case "RecamareraAuxiliar":
-			empleado = new RecamareraAuxiliar(nombre);
+			empleado = new RecamareraAuxiliarBean(nombre);
 			break;
 		case "RecamareraPrincipiante":
 			empleado = new RecamareraPrincipianteBean(nombre);
