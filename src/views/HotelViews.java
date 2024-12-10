@@ -4,7 +4,9 @@ import controllers.HotelController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import beans.HotelBean;
 import beans.HabitacionBean;
@@ -77,21 +79,22 @@ public class HotelViews {
 
 
 	public void listarHabitacionesDeHotel(String nombreHotel, ArrayList<HabitacionBean> habitaciones) {
-		String[] columnNames = { "ID", "Tipo", "Recamarera", "Disponible", "Nº Personas", "Hotel ID" };
-		Object[][] data = new Object[habitaciones.size()][columnNames.length];
+	    String[] columnNames = { "ID", "Tipo", "Recamarera ID", "Disponible", "Nº Personas", "Hotel ID" };
+	    Object[][] data = new Object[habitaciones.size()][columnNames.length];
 
-		for (int i = 0; i < habitaciones.size(); i++) {
-			HabitacionBean habitacion = habitaciones.get(i);
-			data[i][0] = habitacion.getID();
-			data[i][1] = habitacion.getTipo();
-			data[i][2] = habitacion.getRecamareraId() != null ? habitacion.getRecamareraId() : "N/A";
-			data[i][3] = habitacion.isDisponible() ? "Sí" : "No";
-			data[i][4] = habitacion.getNumeroPersonas();
-			data[i][5] = habitacion.getHotelId();
-		}
+	    for (int i = 0; i < habitaciones.size(); i++) {
+	        HabitacionBean habitacion = habitaciones.get(i);
+	        data[i][0] = habitacion.getId();
+	        data[i][1] = habitacion.getTipo();
+	        data[i][2] = habitacion.getRecamareraId() != null ? habitacion.getRecamareraId() : "N/A";
+	        data[i][3] = habitacion.isDisponible() ? "Sí" : "No";
+	        data[i][4] = habitacion.getNumeroPersonas();
+	        data[i][5] = habitacion.getHotelId();
+	    }
 
-		mostrarTabla("Habitaciones del hotel " + nombreHotel, columnNames, data);
+	    mostrarTabla("Habitaciones del hotel " + nombreHotel, columnNames, data);
 	}
+
 
 	public void mostrarHotel(HotelBean hotel) {
 	    String[] columnNames = {"Campo", "Valor"};
@@ -108,12 +111,31 @@ public class HotelViews {
 
 
 	public void mostrarTabla(String titulo, String[] columnNames, Object[][] data) {
-		DefaultTableModel model = new DefaultTableModel(data, columnNames);
-		JTable table = new JTable(model);
-		TableColumn column = table.getColumnModel().getColumn(1);
-		column.setPreferredWidth(200);
-		JScrollPane scrollPane = new JScrollPane(table);
-		JOptionPane.showMessageDialog(null, scrollPane, titulo, JOptionPane.PLAIN_MESSAGE);
+	    DefaultTableModel model = new DefaultTableModel(data, columnNames);
+	    JTable table = new JTable(model);
+
+	    // Ajustar el ancho de las columnas
+	    TableColumnModel columnModel = table.getColumnModel();
+	    
+	    // Ajustar anchos específicos para las columnas
+	    columnModel.getColumn(0).setPreferredWidth(50);   // Columna "ID" más pequeña
+	    columnModel.getColumn(1).setPreferredWidth(150);  // Columna "Nombre"
+	    columnModel.getColumn(2).setPreferredWidth(50);   // Columna "Estrellas" más pequeña
+	    columnModel.getColumn(3).setPreferredWidth(300);  // Columna "Dirección" más grande
+	    columnModel.getColumn(4).setPreferredWidth(150);  // Columna "Teléfono" 
+
+	    JScrollPane scrollPane = new JScrollPane(table);
+	    
+	    // Crear un panel con la tabla
+	    JPanel panel = new JPanel(new BorderLayout());
+	    panel.add(scrollPane, BorderLayout.CENTER);
+
+	    // Crear un JDialog para personalizar el tamaño y centrar la ventana
+	    JDialog dialog = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION).createDialog(titulo);
+	    dialog.setSize(1000, 600); // Establecer tamaño personalizado más grande
+	    dialog.setLocationRelativeTo(null); // Centrar la ventana en la pantalla
+	    dialog.setVisible(true);
 	}
+
 
 }

@@ -14,10 +14,47 @@ public class EmpleadoViews {
     private static final String EXIT_OPTION = "Salir";
 
     public void menuPrincipalEmpleado(EmpleadoController empleadoController) {
+    	 while (true) {
+             Object[] options = {"Información General de Empleados", "Información de Recamareras", "Salir"};
+             int selectedOption = mostrarOpciones("Selecciona una opción", "Sistema de Gestión de Pagos para Empleados de la Cadena de Hoteles UR", options);
+
+             if (selectedOption == JOptionPane.CLOSED_OPTION || selectedOption == 2) {
+                 mostrarMensaje("Saliendo del sistema...");
+                 break;
+             }
+
+             String selectedOptionString = options[selectedOption].toString();
+             empleadoController.evalOption(selectedOptionString);
+         }
+    }
+    
+    public void menuGeneralEmpleado(EmpleadoController empleadoController) {
         Object selectedOption;
         while (true) {
             try {
                 String[] options = { "Listar Empleados", "Agregar Empleado", "Modificar Empleado", "Eliminar Empleado",
+                        EXIT_OPTION };
+                selectedOption = JOptionPane.showInputDialog(null, "Selecciona una opción",
+                        "Menú Principal de Empleados", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+                // Verificar si el usuario hizo clic en el botón de cancelar
+                if (selectedOption == null || selectedOption.toString().equals(EXIT_OPTION)) {
+                    mostrarMensaje("Saliendo del sistema de empleados...");
+                    break;
+                }
+
+                empleadoController.evalOption(selectedOption);
+            } catch (Exception e) {
+                mostrarMensaje("Ha ocurrido un error: " + e.getMessage());
+            }
+        }
+    }
+    
+    public void menuRecamarera(EmpleadoController empleadoController) {
+        Object selectedOption;
+        while (true) {
+            try {
+                String[] options = { "Listar Info. Recamareras", "Asignar Habitacion a Recamarera",
                         EXIT_OPTION };
                 selectedOption = JOptionPane.showInputDialog(null, "Selecciona una opción",
                         "Menú Principal de Empleados", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -155,16 +192,18 @@ public class EmpleadoViews {
         }
 
         // Mostrar la información de los empleados en una tabla
-        String[] empleadoColumnNames = {"Empleado", "Puesto"};
-        Object[][] empleadoData = new Object[empleados.size() - 1][2]; // Restar 1 porque la primera entrada es del hotel
+        String[] empleadoColumnNames = {"ID_Empleado", "Nombre", "Puesto", "Salario"};
+        Object[][] empleadoData = new Object[empleados.size() - 1][empleadoColumnNames.length]; // Restar 1 porque la primera entrada es del hotel
 
         for (int i = 1; i < empleados.size(); i++) { // Empezar desde 1 para omitir la entrada del hotel
             try {
                 String[] empleadoInfo = empleados.get(i).split(", ");
-                if (empleadoInfo.length >= 3) {
-                    empleadoData[i - 1][0] = empleadoInfo[1].split(": ")[1]; // Nombre del empleado
-                    empleadoData[i - 1][1] = empleadoInfo[2].split(": ")[1]; // Puesto del empleado
-                    System.out.println("Empleado: " + empleadoInfo[1].split(": ")[1] + ", Puesto: " + empleadoInfo[2].split(": ")[1]); // Depuración
+                if (empleadoInfo.length >= 4) {
+                    empleadoData[i - 1][0] = empleadoInfo[0].split(": ")[1]; // ID del empleado
+                    empleadoData[i - 1][1] = empleadoInfo[1].split(": ")[1]; // Nombre del empleado
+                    empleadoData[i - 1][2] = empleadoInfo[2].split(": ")[1]; // Puesto del empleado
+                    empleadoData[i - 1][3] = empleadoInfo[3].split(": ")[1]; // Salario del empleado
+                    System.out.println("Empleado: " + empleadoInfo[1].split(": ")[1] + ", Puesto: " + empleadoInfo[2].split(": ")[1] + ", Salario: " + empleadoInfo[3].split(": ")[1]); // Depuración
                 } else {
                     throw new Exception("Formato incorrecto para el empleado: " + empleados.get(i));
                 }
@@ -182,10 +221,15 @@ public class EmpleadoViews {
         JOptionPane.showMessageDialog(null, new Object[] {hotelInfo, scrollPane}, "Lista de Empleados", JOptionPane.PLAIN_MESSAGE);
     }
 
+
     public void mostrarTabla(String titulo, String[] columnNames, Object[][] data) {
         DefaultTableModel model = new DefaultTableModel(data, columnNames);
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
         JOptionPane.showMessageDialog(null, scrollPane, titulo, JOptionPane.PLAIN_MESSAGE);
+    }
+    
+    private int mostrarOpciones(String mensaje, String titulo, Object[] options) {
+        return JOptionPane.showOptionDialog(null, mensaje, titulo, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
     }
 }

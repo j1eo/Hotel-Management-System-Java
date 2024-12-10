@@ -87,7 +87,7 @@ public class MainTest {
 
 
         // Crear empleados
-        RecamareraAuxiliar recamarera1 = new RecamareraAuxiliar("Ana", 1500.0);
+        RecamareraAuxiliarBean recamarera1 = new RecamareraAuxiliarBean("Ana", 1500.0);
         RecamareraPrincipianteBean recamarera2 = new RecamareraPrincipianteBean("Juan", 1200.0);
         AmaDeLlavesBean amaDeLlaves = new AmaDeLlavesBean("Maria", 2000.0);
 
@@ -114,7 +114,7 @@ public class MainTest {
             System.out.println("Nombre: " + hotel.getNombre() + ", Estrellas: " + hotel.getEstrellas());
             System.out.println("Habitaciones:");
             for (HabitacionBean habitacion : hotel.getHabitaciones()) {
-                System.out.println("  ID: " + habitacion.getID() + ", Tipo: " + habitacion.getTipo());
+                System.out.println("  ID: " + habitacion.getId() + ", Tipo: " + habitacion.getTipo());
             }
         }
 
@@ -134,22 +134,22 @@ public class MainTest {
             System.out.println("Nombre: " + recamarera.getNombre() + ", Nivel: " + recamarera.getNivelExperiencia());
             System.out.println("Habitaciones asignadas:");
             for (HabitacionBean habitacion : recamarera.getHabitacionesAsignadas()) {
-                System.out.println("  ID: " + habitacion.getID() + ", Tipo: " + habitacion.getTipo());
+                System.out.println("  ID: " + habitacion.getId() + ", Tipo: " + habitacion.getTipo());
             }
         }
 
         // Imprimir comisiones por habitación de Hotel A
         System.out.println("\nComisiones por habitación del hotel 'Hotel A':");
         for (HabitacionBean habitacion : habitacionesHotelA) {
-            double comision = hotelController.calcularComision("Hotel A", habitacion.getID());
-            System.out.println("ID: " + habitacion.getID() + ", Comisión: $" + comision);
+            double comision = hotelController.calcularComision("Hotel A", habitacion.getId());
+            System.out.println("ID: " + habitacion.getId() + ", Comisión: $" + comision);
         }
 
         // Imprimir comisiones por habitación de Hotel B
         System.out.println("\nComisiones por habitación del hotel 'Hotel B':");
         for (HabitacionBean habitacion : habitacionesHotelB) {
-            double comision = hotelController.calcularComision("Hotel B", habitacion.getID());
-            System.out.println("ID: " + habitacion.getID() + ", Comisión: $" + comision);
+            double comision = hotelController.calcularComision("Hotel B", habitacion.getId());
+            System.out.println("ID: " + habitacion.getId() + ", Comisión: $" + comision);
         }
 
         // Imprimir salarios de cada recamarera
