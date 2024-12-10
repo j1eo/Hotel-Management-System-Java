@@ -41,7 +41,7 @@ public class HabitacionBean implements Serializable {
         this.hotelId = hotelId;
     }
 
-    public String getID() {
+    public String getId() {
         return id;
     }
 
