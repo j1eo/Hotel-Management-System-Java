@@ -79,34 +79,35 @@ public class RecamareraService {
 
 
 	  
-	  public List<HabitacionBean> listarHabitacionesSinRecamareraAsignada(int hotelId) throws SQLException {
-		    List<HabitacionBean> habitaciones = new ArrayList<>();
-		    String sql = "SELECT * FROM habitacion WHERE hotel_id = ? AND recamarera_id IS NULL";
+	public List<HabitacionBean> listarHabitacionesSinRecamareraAsignada(int hotelId) throws SQLException {
+	    List<HabitacionBean> habitaciones = new ArrayList<>();
+	    String sql = "SELECT * FROM habitacion WHERE hotel_id = ? AND recamarera_id IS NULL";
 
-		    try (Connection connection = conexionDataBase.getConnection();
-		         PreparedStatement statement = connection.prepareStatement(sql)) {
-		        statement.setInt(1, hotelId);
+	    try (Connection connection = conexionDataBase.getConnection();
+	         PreparedStatement statement = connection.prepareStatement(sql)) {
+	        statement.setInt(1, hotelId);
 
-		        try (ResultSet resultSet = statement.executeQuery()) {
-		            while (resultSet.next()) {
-		                int habitacionId = resultSet.getInt("habitacion_id");
-		                int hotelIdResult = resultSet.getInt("hotel_id");
-		                String id = resultSet.getString("id");
-		                String tipo = resultSet.getString("tipo");
-		                boolean disponible = resultSet.getBoolean("disponible");
-		                int numeroPersonas = resultSet.getInt("numero_personas");
+	        try (ResultSet resultSet = statement.executeQuery()) {
+	            while (resultSet.next()) {
+	                int habitacionId = resultSet.getInt("habitacion_id");
+	                int hotelIdResult = resultSet.getInt("hotel_id");
+	                String id = resultSet.getString("id");
+	                String tipo = resultSet.getString("tipo");
+	                boolean disponible = resultSet.getBoolean("disponible");
+	                int numeroPersonas = resultSet.getInt("numero_personas");
+	                double costo = resultSet.getDouble("costo"); // Obtener el costo
 
-		                HabitacionBean habitacion = new HabitacionBean(
-		                    habitacionId, hotelIdResult, id, tipo, disponible, numeroPersonas, null // recamareraId es null
-		                );
-		                habitaciones.add(habitacion);
-		            }
-		        }
-		    }
+	                HabitacionBean habitacion = new HabitacionBean(
+	                    habitacionId, hotelIdResult, id, tipo, disponible, numeroPersonas, null, costo // recamareraId es null y costo agregado
+	                );
+	                habitaciones.add(habitacion);
+	            }
+	        }
+	    }
 
-		    return habitaciones;
-		}
-	  
+	    return habitaciones;
+	}
+
 	  
 	  public List<RecamareraBean> listarRecamarerasPorTipoHabitacion(int hotelId, String tipoHabitacion) throws SQLException {
 		    List<RecamareraBean> recamareras = new ArrayList<>();
