@@ -27,10 +27,10 @@ public class SystemViews {
 
     public void mostrarMenuAdmin(SystemController systemController) {
         while (true) {
-            Object[] options = {"Información de Hoteles", "Información de Empleados", "Información de Habitaciones", "Información de Comisiones", "Salir"};
+            Object[] options = {"Información de Hoteles", "Información de Empleados", "Información de Habitaciones", "Información de Comisiones","Información de Ventas", "Salir"};
             int selectedOption = mostrarOpciones("Selecciona una opción", "Sistema de Gestión de Pagos para Empleados de la Cadena de Hoteles UR", options);
 
-            if (selectedOption == JOptionPane.CLOSED_OPTION || selectedOption == 4) {
+            if (selectedOption == JOptionPane.CLOSED_OPTION || selectedOption == 5) {
                 mostrarMensaje("Saliendo del sistema...");
                 break;
             }

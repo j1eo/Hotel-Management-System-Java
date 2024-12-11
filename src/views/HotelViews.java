@@ -8,6 +8,8 @@ import javax.swing.table.TableColumnModel;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.List;
+
 import beans.HotelBean;
 import beans.HabitacionBean;
 
@@ -79,7 +81,7 @@ public class HotelViews {
 
 
 	public void listarHabitacionesDeHotel(String nombreHotel, ArrayList<HabitacionBean> habitaciones) {
-	    String[] columnNames = { "ID", "Tipo", "Recamarera ID", "Disponible", "Nº Personas", "Hotel ID" };
+	    String[] columnNames = { "ID", "Tipo", "Recamarera ID", "Disponible", "Nº Personas", "Hotel ID", "Costo" }; // Agregar "Costo"
 	    Object[][] data = new Object[habitaciones.size()][columnNames.length];
 
 	    for (int i = 0; i < habitaciones.size(); i++) {
@@ -90,23 +92,10 @@ public class HotelViews {
 	        data[i][3] = habitacion.isDisponible() ? "Sí" : "No";
 	        data[i][4] = habitacion.getNumeroPersonas();
 	        data[i][5] = habitacion.getHotelId();
+	        data[i][6] = habitacion.getCosto(); // Agregar el costo
 	    }
 
 	    mostrarTabla("Habitaciones del hotel " + nombreHotel, columnNames, data);
-	}
-
-
-	public void mostrarHotel(HotelBean hotel) {
-	    String[] columnNames = {"Campo", "Valor"};
-	    Object[][] data = {
-	        {"ID", hotel.getHotelId()},
-	        {"Nombre", hotel.getNombre()},
-	        {"Estrellas", hotel.getEstrellas()},
-	        {"Dirección", hotel.getDireccion()},
-	        {"Teléfono", hotel.getTelefono()}
-	    };
-
-	    mostrarTabla("Información del Hotel", columnNames, data);
 	}
 
 
@@ -136,6 +125,45 @@ public class HotelViews {
 	    dialog.setLocationRelativeTo(null); // Centrar la ventana en la pantalla
 	    dialog.setVisible(true);
 	}
+	
+	public HotelBean seleccionarHotel(List<HotelBean> hoteles) {
+	    // Crear una lista de opciones para el cuadro de diálogo
+	    String[] opciones = new String[hoteles.size()];
+	    for (int i = 0; i < hoteles.size(); i++) {
+	        opciones[i] = hoteles.get(i).getNombre() + ", " + hoteles.get(i).getEstrellas() + " Estrellas";
+	    }
+
+	    // Mostrar el cuadro de diálogo para seleccionar un hotel
+	    String seleccion = (String) JOptionPane.showInputDialog(null, "Selecciona un hotel",
+	            "Hoteles Registrados", JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+	    // Buscar el hotel seleccionado en la lista de hoteles
+	    if (seleccion != null) {
+	        String nombreHotel = seleccion.split(", ")[0]; // Obtener el nombre del hotel
+	        for (HotelBean hotel : hoteles) {
+	            if (hotel.getNombre().equals(nombreHotel)) {
+	                return hotel;
+	            }
+	        }
+	    }
+	    return null;
+	}
+	public void mostrarHotel(HotelBean hotel) {
+	    String[] columnNames = {"Campo", "Valor"};
+	    Object[][] data = {
+	        {"ID", hotel.getHotelId()},
+	        {"Nombre", hotel.getNombre()},
+	        {"Estrellas", hotel.getEstrellas()},
+	        {"Dirección", hotel.getDireccion()},
+	        {"Teléfono", hotel.getTelefono()}
+	    };
+
+	    mostrarTabla("Información del Hotel", columnNames, data);
+	}
+
+	
+
+
 
 
 }
