@@ -13,8 +13,9 @@ public class HabitacionBean implements Serializable {
     private boolean disponible;
     private int numeroPersonas;
     private Integer recamareraId;  // Puede ser nulo
+    private double costo; // Agregar atributo costo
 
-    public HabitacionBean(int habitacionId, int hotelId, String id, String tipo, boolean disponible, int numeroPersonas, Integer recamareraId) {
+    public HabitacionBean(int habitacionId, int hotelId, String id, String tipo, boolean disponible, int numeroPersonas, Integer recamareraId, double costo) {
         this.habitacionId = habitacionId;
         this.hotelId = hotelId;
         this.id = id;
@@ -22,6 +23,7 @@ public class HabitacionBean implements Serializable {
         this.disponible = disponible;
         this.numeroPersonas = numeroPersonas;
         this.recamareraId = recamareraId;
+        this.costo = costo; // Inicializar el costo
     }
 
     // Getters y Setters
@@ -79,5 +81,13 @@ public class HabitacionBean implements Serializable {
 
     public void setRecamareraId(Integer recamareraId) {
         this.recamareraId = recamareraId;
+    }
+
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
     }
 }
