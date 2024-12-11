@@ -315,7 +315,7 @@ public class RecamareraService {
                 return estrellasHotel == 3 ? 30 : estrellasHotel == 4 ? 50 : 70;
             case "doble":
                 return estrellasHotel == 3 ? 40 : estrellasHotel == 4 ? 60 : 80;
-            case "penhouse":
+            case "penthouse":
                 return estrellasHotel == 3 ? 60 : estrellasHotel == 4 ? 80 : 100;
             default:
                 throw new IllegalArgumentException("Tipo de habitación inválido.");
