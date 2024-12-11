@@ -1,5 +1,6 @@
 import controllers.HotelController;
 import controllers.RecamareraController;
+import controllers.ComisionController;
 import controllers.EmpleadoController;
 import controllers.ReservacionController;
 import controllers.SystemController;
@@ -15,6 +16,7 @@ import services.ReservacionService;
 import services.VendedorService;
 import views.HotelViews;
 import views.RecamareraViews;
+import views.ComisionViews;
 import views.EmpleadoViews;
 import views.ReservacionViews;
 import views.SystemViews;
@@ -50,12 +52,12 @@ public class Main {
 			inicializarTablas.initializeDatabase();
 
 			// Crear servicios
-			HotelService hotelService = new HotelService(conexionDataBase);
 			ComisionService comisionService = new ComisionService(conexionDataBase);
 			BonoService bonoService = new BonoService(conexionDataBase);
 			EmpleadoService empleadoService = new EmpleadoService(conexionDataBase);
 			ReservacionService reservacionService = new ReservacionService(conexionDataBase);
 			VendedorService vendedorService = new VendedorService(conexionDataBase);
+			HotelService hotelService = new HotelService(conexionDataBase, reservacionService);
 			RecamareraService recamareraService = new RecamareraService(conexionDataBase, hotelService, comisionService);
 
 			// Verificar y actualizar reservaciones expiradas al iniciar el programa
@@ -70,13 +72,15 @@ public class Main {
 			SystemViews systemViews = new SystemViews();
 			ReservacionViews reservacionViews = new ReservacionViews();
 			RecamareraViews recamareraViews = new RecamareraViews();
+			ComisionViews comisionViews = new ComisionViews();
 
 			// Crear controladores
 			RecamareraController recamareraController = new RecamareraController(recamareraService, hotelService,
 					recamareraViews);
+			ComisionController comisionController = new ComisionController(comisionService,comisionViews,bonoService, hotelService);
 			EmpleadoController empleadoController = new EmpleadoController(empleadoService, empleadoViews,
 					hotelService, recamareraViews, recamareraController);
-			HotelViews hotelViews = new HotelViews(null);
+			HotelViews hotelViews = new HotelViews(null); 
 			HotelController hotelController = new HotelController(hotelService, hotelViews, empleadoController,
 					empleadoViews);
 			ReservacionController reservacionController = new ReservacionController(reservacionService, vendedorService,
@@ -86,7 +90,7 @@ public class Main {
 			// Crear SystemController con todos los controladores y vistas
 			SystemController systemController = new SystemController(hotelViews, hotelController, empleadoViews,
 					empleadoController, systemViews, reservacionController, reservacionViews, reservacionService,
-					hotelService);
+					hotelService, comisionController, comisionViews);
 
 			// Mostrar el menú principal
 			systemViews.mostrarMenuPrincipal(systemController);
