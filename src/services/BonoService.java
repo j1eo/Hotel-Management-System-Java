@@ -1,7 +1,6 @@
 package services;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +31,6 @@ public class BonoService {
                     int bonoId = resultSet.getInt("bono_id");
                     int empleadoId = resultSet.getInt("empleado_id");
                     double monto = resultSet.getDouble("bono");
-                    // Aquí no deberíamos obtener fecha porque no existe en la estructura proporcionada
                     BonoGerenteBean bono = new BonoGerenteBean(bonoId, empleadoId, hotelId, monto, null, mes);
                     bonos.add(bono);
                 }
@@ -44,7 +42,6 @@ public class BonoService {
 
         return bonos;
     }
-
 
     public List<String> obtenerNombresGerentesPorHotel(int hotelId) throws SQLException {
         String sql = "SELECT e.nombre " +
@@ -70,7 +67,23 @@ public class BonoService {
     }
 
     public double calcularBonoGerente(int hotelId, String mes) throws SQLException {
-        String sql = "SELECT total_ventas FROM ventasmes WHERE hotel_id = ? AND mes = ?";
+        double totalVentas = obtenerVentasPorMes(hotelId, mes);
+
+        int nivelEstrellas = obtenerNivelEstrellasHotel(hotelId);
+
+        if (nivelEstrellas == 3 && totalVentas >= 80000) {
+            return 5000.0;
+        } else if (nivelEstrellas == 4 && totalVentas >= 100000) {
+            return 8000.0;
+        } else if (nivelEstrellas == 5 && totalVentas >= 150000) {
+            return 12000.0;
+        } else {
+            return 0.0;
+        }
+    }
+
+    public double obtenerVentasPorMes(int hotelId, String mes) throws SQLException {
+        String sql = "SELECT SUM(total_ventas) AS total_ventas FROM ventasmes WHERE hotel_id = ? AND mes = ?";
         double totalVentas = 0.0;
 
         try (Connection connection = conexionDataBase.getConnection();
@@ -87,17 +100,7 @@ public class BonoService {
             throw e;
         }
 
-        int nivelEstrellas = obtenerNivelEstrellasHotel(hotelId);
-
-        if (nivelEstrellas == 3 && totalVentas >= 80000) {
-            return 5000.0;
-        } else if (nivelEstrellas == 4 && totalVentas >= 100000) {
-            return 8000.0;
-        } else if (nivelEstrellas == 5 && totalVentas >= 150000) {
-            return 12000.0;
-        } else {
-            return 0.0;
-        }
+        return totalVentas;
     }
 
     public void registrarComisionGerente(int empleadoId, int hotelId, String mes) throws SQLException {
@@ -109,7 +112,7 @@ public class BonoService {
             statement.setInt(1, empleadoId);
             statement.setInt(2, hotelId);
             statement.setString(3, mes);
-            statement.setDouble(4, bono); // Se inserta el bono calculado, que puede ser 0
+            statement.setDouble(4, bono);
             statement.executeUpdate();
             System.out.println("Comisión del gerente registrada exitosamente.");
         } catch (SQLException e) {
@@ -117,7 +120,6 @@ public class BonoService {
             throw e;
         }
     }
-
 
     private int obtenerNivelEstrellasHotel(int hotelId) throws SQLException {
         String sql = "SELECT estrellas FROM hotel WHERE hotel_id = ?";

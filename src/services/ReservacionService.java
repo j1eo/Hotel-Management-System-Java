@@ -160,8 +160,9 @@ public class ReservacionService {
 
 		return costoBase;
 	}
+
 	public double obtenerVentasPorMes(int hotelId, String mes) throws SQLException {
-        String sql = "SELECT total_ventas FROM ventasmes WHERE hotel_id = ? AND mes = ?";
+        String sql = "SELECT SUM(total_ventas) AS total_ventas FROM ventasmes WHERE hotel_id = ? AND mes = ?";
         double totalVentas = 0.0;
 
         try (Connection connection = conexionDataBase.getConnection();

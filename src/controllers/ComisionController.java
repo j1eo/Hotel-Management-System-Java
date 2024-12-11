@@ -52,50 +52,52 @@ public class ComisionController {
 		}
 	}
 
-	public void listarBonosGerentes() {
-		try {
-			List<HotelBean> hoteles = hotelService.listarHoteles();
-			HotelBean hotel = comisionViews.seleccionarHotel(hoteles);
-			if (hotel == null) {
-				comisionViews.mostrarMensaje("Hotel no seleccionado.");
-				return;
-			}
+	 public void listarBonosGerentes() {
+	        try {
+	            List<HotelBean> hoteles = hotelService.listarHoteles();
+	            HotelBean hotel = comisionViews.seleccionarHotel(hoteles);
+	            if (hotel == null) {
+	                comisionViews.mostrarMensaje("Hotel no seleccionado.");
+	                return;
+	            }
 
-			Date fechaMes = comisionViews.pedirFechaMes();
-			if (fechaMes == null) {
-				comisionViews.mostrarMensaje("Fecha no seleccionada.");
-				return;
-			}
+	            Date fechaMes = comisionViews.pedirFechaMes();
+	            if (fechaMes == null) {
+	                comisionViews.mostrarMensaje("Fecha no seleccionada.");
+	                return;
+	            }
 
-			String mes = fechaMes.toString().substring(0, 7); // Obtener el año y mes en formato YYYY-MM
-			List<String> nombresGerentes = bonoService.obtenerNombresGerentesPorHotel(hotel.getHotelId());
-			List<BonoGerenteBean> bonos = bonoService.obtenerBonosGerentesPorMes(hotel.getHotelId(), mes);
+	            String mes = fechaMes.toString().substring(0, 7); // Obtener el año y mes en formato YYYY-MM
+	            List<String> nombresGerentes = bonoService.obtenerNombresGerentesPorHotel(hotel.getHotelId());
+	            List<BonoGerenteBean> bonos = bonoService.obtenerBonosGerentesPorMes(hotel.getHotelId(), mes);
 
-			// Crear una lista de bonos asegurando que todos los gerentes tengan un bono
-			List<BonoGerenteBean> bonosCompletos = new ArrayList<>();
-			for (String nombreGerente : nombresGerentes) {
-				int empleadoId = bonoService.obtenerIdEmpleadoPorNombre(nombreGerente);
-				boolean bonoEncontrado = false;
-				for (BonoGerenteBean bono : bonos) {
-					if (bono.getEmpleadoId() == empleadoId) {
-						bonosCompletos.add(bono);
-						bonoEncontrado = true;
-						break;
-					}
-				}
-				if (!bonoEncontrado) {
-					// Si no se encontró bono para el gerente, agregar un bono de 0
-					bonosCompletos.add(new BonoGerenteBean(0, empleadoId, hotel.getHotelId(), 0.0, null, mes));
-				}
-			}
+	            // Crear una lista de bonos asegurando que todos los gerentes tengan un bono
+	            List<BonoGerenteBean> bonosCompletos = new ArrayList<>();
+	            for (String nombreGerente : nombresGerentes) {
+	                int empleadoId = bonoService.obtenerIdEmpleadoPorNombre(nombreGerente);
+	                boolean bonoEncontrado = false;
+	                for (BonoGerenteBean bono : bonos) {
+	                    if (bono.getEmpleadoId() == empleadoId) {
+	                        bonosCompletos.add(bono);
+	                        bonoEncontrado = true;
+	                        break;
+	                    }
+	                }
+	                if (!bonoEncontrado) {
+	                    // Calcular y registrar el bono para el gerente si no se encuentra
+	                    bonoService.registrarComisionGerente(empleadoId, hotel.getHotelId(), mes);
+	                    double bono = bonoService.calcularBonoGerente(hotel.getHotelId(), mes);
+	                    bonosCompletos.add(new BonoGerenteBean(0, empleadoId, hotel.getHotelId(), bono, null, mes));
+	                }
+	            }
 
-			comisionViews.mostrarBonosGerentes(bonosCompletos, nombresGerentes);
+	            comisionViews.mostrarBonosGerentes(bonosCompletos, nombresGerentes);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			comisionViews.mostrarMensaje("Error al listar los bonos de los gerentes: " + e.getMessage());
-		}
-	}
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            comisionViews.mostrarMensaje("Error al listar los bonos de los gerentes: " + e.getMessage());
+	        }
+	    }
 
 	public void listarComisionesRecamareras() {
 		try {
