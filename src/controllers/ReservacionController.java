@@ -1,6 +1,7 @@
 package controllers;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,6 +119,23 @@ public class ReservacionController {
 	        reservacionViews.mostrarMensaje("Error al realizar la reservación: " + e.getMessage());
 	    }
 	}
+	
+	public void obtenerVentasPorMes() {
+        try {
+            List<HotelBean> hoteles = hotelService.listarHoteles(); 
+            HotelBean hotel = reservacionViews.seleccionarHotel(hoteles); 
+            if (hotel == null) {
+                reservacionViews.mostrarMensaje("Hotel no seleccionado.");
+                return;
+            }
+            String mes = reservacionViews.pedirFechaMes().toString().substring(0, 7); 
+            double totalVentas = reservacionService.obtenerVentasPorMes(hotel.getHotelId(), mes);
+            reservacionViews.mostrarTotalVentasMes(hotel.getHotelId(), mes, totalVentas); 
+        } catch (SQLException e) {
+            reservacionViews.mostrarMensaje("Error al obtener las ventas: " + e.getMessage());
+        }
+    }
+	 
 
 
 

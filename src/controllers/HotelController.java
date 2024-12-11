@@ -97,6 +97,7 @@ public class HotelController {
         }
     }
 
+
     public void buscarHotelPorNombre() {
         try {
             String nombreHotel = hotelViews.solicitarNombreHotel();
