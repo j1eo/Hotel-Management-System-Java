@@ -24,6 +24,7 @@ public class InicializarTablas {
         crearTablaComisionVendedor(); // Nueva tabla de comisiones de vendedores
         crearTablaBonoGerente(); // Nueva tabla de bonos de gerentes
         crearTablaAsignacionHabitacion(); // Nueva tabla de asignaciones de habitaciones
+        crearTablaVentasMes();
     }
 
     public void crearTablaHotel() {
@@ -32,7 +33,7 @@ public class InicializarTablas {
                      "nombre VARCHAR(255) NOT NULL, " +
                      "estrellas INT NOT NULL, " +
                      "direccion VARCHAR(255) NOT NULL, " +
-                     "telefono VARCHAR(11) NOT NULL" +
+                     "telefono VARCHAR(12) NOT NULL" +
                      ");";
 
         try (Statement stmt = connection.createStatement()) {
@@ -132,6 +133,7 @@ public class InicializarTablas {
                      "recamarera_id INT, " +
                      "disponible BOOLEAN NOT NULL DEFAULT true, " +
                      "numero_personas INT DEFAULT 0, " +
+                     "costo DOUBLE NOT NULL, " + // Agregar la columna de costo
                      "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id), " +
                      "FOREIGN KEY (recamarera_id) REFERENCES recamarera(empleado_id)" +
                      ");";
@@ -143,6 +145,7 @@ public class InicializarTablas {
             System.err.println("Error al crear la tabla 'habitacion': " + e.getMessage());
         }
     }
+
 
 
 
@@ -251,5 +254,24 @@ public class InicializarTablas {
             System.err.println("Error al crear la tabla 'AsignacionHabitacion': " + e.getMessage());
         }
     }
+    
+    public void crearTablaVentasMes() {
+        String sql = "CREATE TABLE IF NOT EXISTS ventasmes (" +
+                     "venta_id INT AUTO_INCREMENT PRIMARY KEY, " +
+                     "hotel_id INT NOT NULL, " +
+                     "mes VARCHAR(7) NOT NULL, " + // Formato YYYY-MM para representar el mes
+                     "total_ventas DOUBLE NOT NULL, " +
+                     "FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id)" +
+                     ");";
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Tabla 'VentasMes' creada o ya existe.");
+        } catch (SQLException e) {
+            System.err.println("Error al crear la tabla 'VentasMensuales': " + e.getMessage());
+        }
+    }
+    
+    
 
 }
